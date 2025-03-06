@@ -1,8 +1,0 @@
-{
-  "devDependencies": {
-    "nodemon": "^3.1.9"
-  },
-  "dependencies": {
-    "firebase": "^11.4.0"
-  }
-}
