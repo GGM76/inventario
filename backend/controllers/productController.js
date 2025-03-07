@@ -39,4 +39,63 @@ const addProducto = async (req, res) => {
   }
 };
 
-module.exports = { getProductos, addProducto };
+const getProductoById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const docRef = await db.collection('productos').doc(id).get();
+    if (!docRef.exists) {
+      return res.status(404).json({ message: 'Producto no encontrado' });
+    }
+    res.status(200).json({ id: docRef.id, ...docRef.data() });
+  } catch (error) {
+    res.status(500).json({ message: 'Error obteniendo el producto', error });
+  }
+};
+
+const updateProducto = async (req, res) => {
+  const { id } = req.params;
+  const { nombre, cantidad, precio, empresa_id } = req.body;
+
+  try {
+    const docRef = db.collection('products').doc(id);
+    const doc = await docRef.get();
+
+    if (!doc.exists) {
+      return res.status(404).json({ message: 'Producto no encontrado' });
+    }
+
+    await docRef.update({
+      nombre,
+      cantidad,
+      precio,
+      empresa_id,
+    });
+    res.status(200).json({ id, nombre, cantidad, precio, empresa_id });
+  } catch (error) {
+    res.status(500).json({ message: 'Error actualizando el producto', error });
+  }
+};
+
+const deleteProducto = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const docRef = db.collection('products').doc(id);
+    const doc = await docRef.get();
+
+    if (!doc.exists) {
+      return res.status(404).json({ message: 'Producto no encontrado' });
+    }
+
+    await docRef.delete();
+    res.status(200).json({ message: 'Producto eliminado exitosamente' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error eliminando el producto', error });
+  }
+};
+
+
+module.exports = { getProductos, 
+  addProducto,
+  updateProducto, 
+  deleteProducto,
+  getProductoById };

@@ -36,13 +36,15 @@ const loginUser = async (req, res) => {
   try {
     // Verificar el usuario con Firebase Authentication
     const userRecord = await admin.auth().getUserByEmail(email);
-
+    
     // Crear el JWT
     const token = jwt.sign(
       { uid: userRecord.uid },
       process.env.JWT_SECRET,
       { expiresIn: '1h' }
     );
+    console.log('JWT creado');
+
 
     // Obtener el rol y la empresa asociada
     const userSnapshot = await admin.firestore().collection('usuarios').doc(userRecord.uid).get();
