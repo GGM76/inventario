@@ -1,11 +1,15 @@
-// src/store.js
+// src/redux/store.js
 import { configureStore } from '@reduxjs/toolkit';
-import authReducer from './reducers/authReducer';  // Asegúrate de tener este reducer
+import productReducer from './reducers/productSlice';
+import authReducer from './reducers/authSlice';
+import userReducer from './reducers/userSlice';
+import projectReducer from './reducers/projectSlice';
 
-const store = configureStore({
+export const store = configureStore({
   reducer: {
-    auth: authReducer,  // Reducer para manejar el estado de autenticación
+    products: productReducer, // Reducer que maneja los productos
+    auth: authReducer, // Reducer para manejar la autenticación
+    users: userReducer,  // Asegúrate de agregar el reducer de 'users'
+    projects: projectReducer,  // Asegúrate de que esté registrado en el store
   },
 });
-
-export default store;

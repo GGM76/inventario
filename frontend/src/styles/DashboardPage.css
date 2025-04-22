@@ -1,0 +1,16 @@
+/* src/styles/DashboardPage.css */
+.logout-btn {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin-top: 20px;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+  }
+  
+  .logout-btn:hover {
+    background-color: #ff1a1a;
+  }
+  

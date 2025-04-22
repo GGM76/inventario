@@ -1,23 +1,39 @@
-// middleware/authMiddleware.js
-const jwt = require('jsonwebtoken');
-const dotenv = require('dotenv');
-dotenv.config();
+const { admin } = require('../config/firebase');  // Accede correctamente a `admin`
 
-// Middleware para verificar el token JWT
-const authenticateToken = (req, res, next) => {
-  const token = req.header('Authorization')?.replace('Bearer ', '');
+const authenticateToken = async (req, res, next) => {
+  const token = req.headers['authorization'] && req.headers['authorization'].split(' ')[1];
 
   if (!token) {
-    return res.status(403).json({ message: 'Acceso denegado. No se encontró el token.' });
+    return res.status(401).json({ error: 'Token no proporcionado.' });
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET); // Verifica el token
-    req.user = decoded; // Si es válido, lo asignamos a la solicitud
-    next();
+    // Verificar token
+    const decodedToken = await admin.auth().verifyIdToken(token);  
+    //console.log('Token verificado:', decodedToken);
+
+    // Buscar el usuario en Firestore para obtener rol y empresa
+    const userRef = admin.firestore().collection('users').doc(decodedToken.uid);
+    const userDoc = await userRef.get();
+    
+    if (!userDoc.exists) {
+      return res.status(404).json({ error: 'Usuario no encontrado.' });
+    }
+
+    const userData = userDoc.data();
+    req.user = { ...decodedToken, role: userData.role, empresa: userData.empresa_id }; 
+    next();  // Continuar a la siguiente función (controlador)
   } catch (error) {
-    return res.status(401).json({ message: 'Token inválido' });
+    console.error('Error verificando el token:', error);
+    return res.status(403).json({ error: 'Token inválido o expirado.' });
   }
 };
 
-module.exports = authenticateToken;
+const checkAdmin = (req, res, next) => {
+  if (req.user.role !== 'admin') {
+    return res.status(403).json({ error: 'No tienes permisos para acceder a esta ruta.' });
+  }
+  next();  // Si es admin, continuar con la siguiente función
+};
+
+module.exports = { checkAdmin, authenticateToken };

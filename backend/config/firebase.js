@@ -1,16 +1,16 @@
-
-
+//../config/firebase.js
 const admin = require('firebase-admin');
 const dotenv = require('dotenv');
-dotenv.config();
-var serviceAccount = require("../inventario-11b49-firebase-adminsdk-fbsvc-6be7567e54.json");
 
-// Inicializa Firebase Admin SDK
+dotenv.config();
+
+const serviceAccount = require('../inventario-11b49-firebase-adminsdk-fbsvc-3d3a3754f5.json');
+
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
     databaseURL: `https://${process.env.FIREBASE_PROJECT_ID}.firebaseio.com`
 });
 
-const db = admin.firestore(); // Acceso a Firestore
+const db = admin.firestore();
 
 module.exports = { admin, db };

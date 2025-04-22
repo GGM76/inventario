@@ -1,90 +1,92 @@
-// src/components/ProductForm.js
+// src/components/ProductForm.jsx
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-const ProductForm = ({ onSave, product = {} }) => {
-  // Establecemos los estados de cada campo (con valores predeterminados si estamos editando)
-  const [nombre, setNombre] = useState(product.nombre || '');  // nombre del producto
-  const [cantidad, setCantidad] = useState(product.cantidad || '');  // cantidad en inventario
-  const [precio, setPrecio] = useState(product.precio || '');  // precio del producto
-  const [empresaId, setEmpresaId] = useState(product.empresa_id || '');  // id de la empresa
+const ProductForm = ({ onSave, empresaId }) => {
+  const navigate = useNavigate();
 
-  // Manejo del envío del formulario
+  const [clave, setClave] = useState('');
+  const [categoria, setCategoria] = useState('');
+  const [nombre, setNombre] = useState('');
+  const [precio, setPrecio] = useState('');
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Llamamos a la función onSave que se pasa como prop con los valores del formulario
+    // Enviar los datos del producto al componente padre (AddProductPage)
     onSave({
+      clave,
+      categoria,
       nombre,
-      cantidad,
       precio,
-      empresa_id: empresaId,  // Renombramos el campo a empresa_id
+      empresa_id: empresaId, // Usamos el empresaId pasado como prop
     });
+  };
 
-    // Limpiamos el formulario después de enviar (esto es opcional, solo si quieres limpiar los campos)
-    setNombre('');
-    setCantidad('');
-    setPrecio('');
-    setEmpresaId('');
+  // Función para manejar la cancelación
+  const handleCancel = () => {
+    navigate('/dashboard');  // Redirigir al Dashboard si el usuario cancela
   };
 
   return (
-    <form onSubmit={handleSubmit} className="product-form">
-      <h2>{product.id ? 'Editar Producto' : 'Agregar Producto'}</h2>
-      
-      {/* Campo para el nombre */}
+    <form onSubmit={handleSubmit}>
       <div>
-        <label htmlFor="nombre">Nombre del Producto</label>
-        <input
-          type="text"
-          id="nombre"
-          placeholder="Ingrese el nombre del producto"
-          value={nombre}
-          onChange={(e) => setNombre(e.target.value)}
-          required
+        <label>Clave:</label>
+        <input 
+          type="text" 
+          value={clave} 
+          onChange={(e) => setClave(e.target.value)} 
+          required 
+        />
+      </div>
+      <div>
+        <label>Categoría:</label>
+        <input 
+          type="text" 
+          value={categoria} 
+          onChange={(e) => setCategoria(e.target.value)} 
+          required 
+        />
+      </div>
+      <div>
+        <label>Nombre:</label>
+        <input 
+          type="text" 
+          value={nombre} 
+          onChange={(e) => setNombre(e.target.value)} 
+          required 
+        />
+      </div>
+      <div>
+        <label>Precio:</label>
+        <input 
+          type="number" 
+          value={precio} 
+          onChange={(e) => setPrecio(e.target.value)} 
+          required 
         />
       </div>
 
-      {/* Campo para la cantidad */}
-      <div>
-        <label htmlFor="cantidad">Cantidad</label>
-        <input
-          type="number"
-          id="cantidad"
-          placeholder="Ingrese la cantidad en inventario"
-          value={cantidad}
-          onChange={(e) => setCantidad(e.target.value)}
-          required
-        />
-      </div>
+      {/* Contenedor de los botones */}
+      <div className="button-container">
+        {/* Botón de guardar */}
+        <button 
+          type="submit"
+          className="btn btn-primary"
+          style={{ marginRight: '10px' }}  // Espaciado entre botones
+        >
+          Guardar
+        </button>
 
-      {/* Campo para el precio */}
-      <div>
-        <label htmlFor="precio">Precio</label>
-        <input
-          type="number"
-          id="precio"
-          placeholder="Ingrese el precio"
-          value={precio}
-          onChange={(e) => setPrecio(e.target.value)}
-          required
-        />
+        {/* Botón de cancelar */}
+        <button
+          type="button" // No debe ser de tipo submit
+          onClick={handleCancel}
+          className="btn btn-secondary"
+        >
+          Cancelar
+        </button>
       </div>
-
-      {/* Campo para el ID de la empresa */}
-      <div>
-        <label htmlFor="empresaId">Empresa</label>
-        <input
-          type="text"
-          id="empresaId"
-          placeholder="Empresa"
-          value={empresaId}
-          onChange={(e) => setEmpresaId(e.target.value)}
-          required
-        />
-      </div>
-
-      {/* Botón para enviar el formulario */}
-      <button type="submit">{product.id ? 'Actualizar Producto' : 'Agregar Producto'}</button>
     </form>
   );
 };

@@ -1,37 +1,73 @@
-// src/redux/actions/authActions.js
 import axios from 'axios';
 
+const API_URL = 'http://localhost:8000/roomies'; // Usamos una constante para la URL base
+
+// Acción de login
 export const login = (email, password) => async (dispatch) => {
   try {
-    const response = await axios.post('http://localhost:5000/api/login', {
-      email,
-      password,
-    });
+    dispatch({ type: 'LOGIN_REQUEST' });
+
+    const response = await axios.post(`${API_URL}/login`, { email, password });
+
+    // Acceder a los datos de usuario y token desde la respuesta
+    const { token, userInfo } = response.data; // Extraemos el token y el objeto userInfo
+
+    // Verificamos que tenemos la información del usuario
+    if (!userInfo || !userInfo.role) {
+      throw new Error("Datos del usuario incompletos.");
+    }
+
     dispatch({
       type: 'LOGIN_SUCCESS',
-      payload: response.data,
+      payload: { token, userInfo },  // Guardamos tanto el token como los datos del usuario
     });
-    localStorage.setItem('token', response.data.token); // Guardamos el token en localStorage
+
+    return { token, userInfo };  // Devolvemos los datos al frontend
+
   } catch (error) {
+    console.error('Error en login:', error);
     dispatch({
       type: 'LOGIN_FAIL',
+      payload: error.response ? error.response.data.message : error.message,
+    });
+    throw error;  // Lanza el error para que el frontend lo maneje
+  }
+};
+
+// Acción de registro
+export const register = (email, password, role, empresa_id) => async (dispatch) => {  // Cambié 'empresa' por 'empresa_id'
+  try {
+    dispatch({ type: 'REGISTER_REQUEST' });
+
+    // Verifica que los datos sean enviados de forma correcta (sin anidar)
+    const response = await axios.post(
+      `${API_URL}/register`,
+      { email, password, role, empresa_id },  // Cambié 'empresa' por 'empresa_id'
+      {
+        headers: {
+          'Content-Type': 'application/json', // Asegura que el contenido se envíe como JSON
+        },
+      }
+    );
+
+    dispatch({ type: 'REGISTER_SUCCESS' });
+
+  } catch (error) {
+    console.error('Error al registrar:', error.response ? error.response.data : error.message);
+    dispatch({
+      type: 'REGISTER_FAIL',
       payload: error.response ? error.response.data.message : error.message,
     });
   }
 };
 
-export const register = (email, password, role,empresa_id) => async (dispatch) => {
-  try {
-    await axios.post('http://localhost:5000/api/register', { email, password, role,empresa_id });
-    dispatch({ type: 'REGISTER_SUCCESS' });
-  } catch (error) {
-    console.error('Error en registro', error);
-  }
-};
-
+// Acción de logout
 export const logout = () => (dispatch) => {
-  localStorage.removeItem('token');
-  dispatch({
-    type: 'LOGOUT',
-  });
+  // Eliminar el token y la información de usuario del localStorage
+  localStorage.removeItem('authToken');
+  localStorage.removeItem('userRole');
+  localStorage.removeItem('userEmpresaId');  // Cambié 'userEmpresa' por 'userEmpresaId'
+
+  // Disparar acción para eliminar la sesión en Redux
+  dispatch({ type: 'LOGOUT' });
 };
