@@ -4,7 +4,7 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
-const serviceAccount = require('../inventario-11b49-firebase-adminsdk-fbsvc-3d3a3754f5.json');
+const serviceAccount = require('../inventario-11b49-firebase-adminsdk-fbsvc-2631f257be.json');
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),

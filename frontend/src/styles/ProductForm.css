@@ -1,0 +1,96 @@
+/* General para todos los botones */
+form .btn {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Botón de guardar - estilo Seedgroup */
+form .btn-primary {
+  background-color: #3cb424;
+  color: white;
+}
+
+form .btn-primary:hover {
+  background-color: #2e7d32;
+}
+
+/* Botón de cancelar - estilo Seedgroup */
+form .btn-secondary {
+  background-color: #ccc;
+  color: #333;
+}
+
+form .btn-secondary:hover {
+  background-color: #bbb;
+}
+
+/* Contenedor de botones */
+.button-container {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+/* Responsive: botones apilados en móviles */
+@media (max-width: 600px) {
+  .button-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn {
+    width: 100%;
+  }
+}
+
+/* Estilos generales del formulario */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Grupos de inputs */
+form div {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Etiquetas */
+form label {
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #2e7d32; /* Verde oscuro Seedgroup */
+}
+
+/* Campos de entrada */
+form input {
+  padding: 10px 14px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  transition: border-color 0.2s ease;
+}
+
+form input:focus {
+  border-color: #3cb424;
+  outline: none;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  form {
+    gap: 15px;
+  }
+
+  .btn {
+    width: 100%;
+  }
+}

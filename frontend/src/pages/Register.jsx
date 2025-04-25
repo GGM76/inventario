@@ -1,123 +1,128 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { register } from '../redux/actions/authActions';
 import { useNavigate } from 'react-router-dom';  
-import '../styles/RegisterPage.css';  // Asegúrate de importar el CSS
+import { toast } from 'react-toastify';
+import '../styles/RegisterPage.css';
 
 const RegisterPage = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();  // Inicializamos el navigate
+  const navigate = useNavigate();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('usuario');  // Definimos el rol con valor predeterminado 'usuario'
-  const [empresa_id, setEmpresaId] = useState('empresa123');  // Cambié 'empresa' por 'empresa_id'
-  const [validationError, setValidationError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);  // Estado para manejar carga
+  const [showPassword, setShowPassword] = useState(false);
+  const [role, setRole] = useState('usuario');
+  const [empresa_id, setEmpresaId] = useState('Seedgroup');
+  const [isLoading, setIsLoading] = useState(false);
+  const [fadeIn, setFadeIn] = useState(false);
 
-  // Validación de email
-  const validateEmail = (email) => {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return regex.test(email);
+  useEffect(() => {
+    setFadeIn(true);
+  }, []);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
   };
 
-  // Validación de contraseña
-  const validatePassword = (password) => {
-    return password.length >= 6;  // Por ejemplo, contraseñas de al menos 6 caracteres
-  };
+  const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const validatePassword = (password) => password.length >= 6;
 
   const handleSubmit = (e) => {
     e.preventDefault();
-  
-    // Validar formulario
-    if (!email || !password || !role || !empresa_id) {  // Cambié 'empresa' por 'empresa_id'
-      setValidationError('Todos los campos son obligatorios.');
+    if (!email || !password || !role || !empresa_id) {
+      toast.error('Todos los campos son obligatorios.');
       return;
     }
-  
+
     if (!validateEmail(email)) {
-      setValidationError('Por favor ingresa un correo electrónico válido.');
+      toast.warning('Por favor ingresa un correo electrónico válido.');
       return;
     }
-  
+
     if (!validatePassword(password)) {
-      setValidationError('La contraseña debe tener al menos 6 caracteres.');
+      toast.warning('La contraseña debe tener al menos 6 caracteres.');
       return;
     }
-  
-    setValidationError('');
-    setIsLoading(true);  // Iniciar el estado de carga
-  
-    // Asegúrate de enviar los parámetros correctamente
-    dispatch(register(email, password, role, empresa_id))  // Cambié 'empresa' por 'empresa_id'
+
+    setIsLoading(true);
+
+    dispatch(register(email, password, role, empresa_id))
       .then(() => {
-        // Si el registro es exitoso, redirigimos al Login
-        navigate('/login');  // Redirigimos al login después de un registro exitoso
+        toast.success('¡Registro exitoso!');
+        navigate('/login');
       })
       .catch((err) => {
-        // Manejo de errores, si el registro falla
         console.error('Register error', err);
-        setValidationError(err.response?.data?.message || 'Error al registrarse.');
+        toast.error(err.response?.data?.message || 'Error al registrarse.');
       })
-      .finally(() => {
-        setIsLoading(false);  // Detener el estado de carga
-      });
+      .finally(() => setIsLoading(false));
   };
-  
 
   return (
-    <div className="register-container">
-      <div className="register-form">
-        <h1>Registrarse</h1>
-        {validationError && <p className="error-message">{validationError}</p>}
+    <div className="register-bg d-flex align-items-center justify-content-center">
+      <div className={`register-wrapper card shadow-lg ${fadeIn ? 'fade-slide' : ''}`}>
+        <h2 className="text-center mb-4">Crea tu cuenta</h2>
         <form onSubmit={handleSubmit}>
-          <div className="input-group">
-            <label>Email:</label>
+          <div className="mb-3">
+            <label className="form-label">Correo electrónico</label>
             <input
               type="email"
+              className="form-control"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              placeholder="ejemplo@email.com"
               required
-              placeholder="Ingresa tu email"
-              aria-label="Correo electrónico"
             />
           </div>
-          <div className="input-group">
-            <label>Contraseña:</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              placeholder="Crea una contraseña"
-              aria-label="Contraseña"
-            />
+          <div className="mb-3 password-wrapper">
+            <label className="form-label">Contraseña</label>
+            <div className="password-input-group">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                className="form-control"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Mínimo 6 caracteres"
+                required
+              />
+              <span className="toggle-password" onClick={togglePasswordVisibility}>
+                {showPassword ? "🙈" : "👁️"}
+              </span>
+            </div>
           </div>
-          <div className="input-group">
-            <label>Rol:</label>
+          <div className="mb-3">
+            <label className="form-label">Rol</label>
             <select
+              className="form-select"
               value={role}
               onChange={(e) => setRole(e.target.value)}
             >
               <option value="usuario">Usuario</option>
-              {/* Puedes agregar otros roles si es necesario */}
-              {/* <option value="admin">Admin</option> */}
             </select>
           </div>
-          <div className="input-group">
-            <label>Empresa:</label>
+          <div className="mb-4">
+            <label className="form-label">Empresa</label>
             <select
-              value={empresa_id}  // Cambié 'empresa' por 'empresa_id'
-              onChange={(e) => setEmpresaId(e.target.value)}  // Cambié 'setEmpresa' por 'setEmpresaId'
+              className="form-select"
+              value={empresa_id}
+              onChange={(e) => setEmpresaId(e.target.value)}
             >
-              <option value="empresa123">Empresa 123</option>
-              <option value="empresa234">Empresa 234</option>
-              <option value="empresa345">Empresa 345</option>
-              <option value="empresa456">Empresa 456</option>
+              <option value="Seedgroup">Seedgroup</option>
+              <option value="Pico">Pico</option>
+              <option value="Mutis">Mutis</option>
+              <option value="Incedo">Incedo</option>
             </select>
           </div>
-          <button type="submit" className="submit-btn" disabled={isLoading}>
-            {isLoading ? 'Cargando...' : 'Registrarse'}
+          <button type="submit" className="btn glass-btn w-100 mb-2" disabled={isLoading}>
+            {isLoading ? 'Registrando...' : 'Registrarse'}
+          </button>
+          <button
+            type="button"
+            className="btn btn-outline-secondary w-100"
+            onClick={() => navigate('/login')}
+          >
+            Cancelar
           </button>
         </form>
       </div>

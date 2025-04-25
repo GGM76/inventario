@@ -7,6 +7,8 @@ import { useNavigate } from 'react-router-dom';
 import ProductList from '../components/ProductList';
 import { fetchProductTotalQuantity, fetchProducts, deleteProduct, setProducts } from '../redux/reducers/productSlice';
 import BodegaFormModal from '../components/BodegaFormModal';
+import Swal from 'sweetalert2';
+import '../styles/DashboardPage.css';
 
 const Dashboard = () => {
   const dispatch = useDispatch();
@@ -18,32 +20,41 @@ const Dashboard = () => {
   const searchQuery = searchParams.get('search') || '';
   const userRole = localStorage.getItem('userRole');
   const userEmpresaId = localStorage.getItem('userEmpresaId');
+  const isSeedgroup = userEmpresaId === 'Seedgroup';
+  const theme = isSeedgroup ? 'seedgroup' : 'default';
   const [showBodegaModal, setShowBodegaModal] = useState(false);
 
   // Función para verificar si el usuario es admin
   const checkAdminPermission = () => {
     if (userRole !== 'admin') {
-      alert("No tienes permisos para realizar esta acción.");
+      Swal.fire({
+        icon: 'error',
+        title: 'Acceso denegado',
+        text: 'No tienes permisos para realizar esta acción.',
+      });
       return false;
     }
     return true;
-  };
-
+  };  
   // Filtrar productos por el query de búsqueda
   const filteredProducts = products.filter(product =>
     product.nombre.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  ); 
 
-  
-  
   useEffect(() => {
     if (userEmpresaId) {
-        dispatch(fetchProducts(userEmpresaId)).then(() => {
-            setIsLoaded(true);
-        }).catch(() => alert("Error al cargar los productos"));
+      dispatch(fetchProducts(userEmpresaId)).then(() => {
+        setIsLoaded(true);
+      }).catch(() => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Error al cargar los productos.',
+        });
+      });
     }
   }, [dispatch, userEmpresaId, navigate]);
-
+  
   useEffect(() => {
     if (isLoaded && userEmpresaId && !isQuantitiesLoaded) {
         const getTotalQuantity = async () => {
@@ -87,15 +98,36 @@ const Dashboard = () => {
   }, [isLoaded, dispatch, products, userEmpresaId, isQuantitiesLoaded]);
 
   const handleDelete = async (productId) => {
-    if (window.confirm('¿Estás seguro de que deseas eliminar este producto?')) {
+    const result = await Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'Esta acción eliminará el producto permanentemente.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+    });
+  
+    if (result.isConfirmed) {
       try {
         await dispatch(deleteProduct(productId));
-        alert('Producto eliminado con éxito');
+        Swal.fire({
+          icon: 'success',
+          title: 'Eliminado',
+          text: 'Producto eliminado con éxito',
+          confirmButtonColor: '#3cb424'
+        });
       } catch (error) {
-        alert('Hubo un error al eliminar el producto');
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Hubo un error al eliminar el producto',
+        });
       }
     }
   };
+  
 
   const handleAddProduct = () => {
     if (checkAdminPermission()) {
@@ -124,27 +156,38 @@ const Dashboard = () => {
   };
 
   return (
-    <div>
+    <div className={`dashboard ${theme}`}>
+      {isSeedgroup && (
+        <div className="dashboard-header">
+          <img src="/images/seed-logo.png" alt="Seedgroup Logo" className="seed-logo" />
+        </div>
+      )}
+      
       <h1>Inventario</h1>
 
-      {/* Mostrar los botones solo si el usuario es admin */}
       {userRole === 'admin' && (
-  <>
-    <button onClick={handleAddProduct}>Agregar Producto</button>
-    <button onClick={handleAddBodega}>Agregar Bodega</button>
-    <button onClick={handleAddProductToBodega}>Poner productos en bodegas</button>
-    <button onClick={() => navigate('/mass-product-upload')}>Agregación Masiva</button>
-  </>
-)}
+        <div className="dashboard-buttons">
+          <button className="btn-seed create" onClick={handleAddProduct}>Agregar Producto</button>
+          <button className="btn-seed create" onClick={handleAddBodega}>Agregar Bodega</button>
+          <button className="btn-seed create" onClick={handleAddProductToBodega}>Poner productos en bodegas</button>
+          <button className="btn-seed create" onClick={() => navigate('/mass-product-upload')}>Agregación Masiva</button>
+        </div>
+      )}
+
 
 {showBodegaModal && (
   <BodegaFormModal
     onClose={() => setShowBodegaModal(false)}
     onSuccess={() => {
-      alert('Bodega agregada con éxito');
+      Swal.fire({
+        icon: 'success',
+        title: '¡Bodega agregada!',
+        text: 'La bodega fue registrada con éxito.',
+        confirmButtonColor: '#3cb424'
+      });
       setShowBodegaModal(false);
-      // Aquí podrías refrescar datos si es necesario
     }}
+
   />
 )}
 

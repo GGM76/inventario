@@ -4,7 +4,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Select from 'react-select';
 import * as bootstrap from 'bootstrap';
-
+import Swal from 'sweetalert2';
+import '../styles/AddProject.css'; // Asegúrate de importar el archivo CSS
 
 const AddProject = () => {
   const navigate = useNavigate();
@@ -112,7 +113,7 @@ const AddProject = () => {
         [bodegaId]: numericValue
       }
     }));
-  };  
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -141,7 +142,11 @@ const AddProject = () => {
       });
 
       if (productosConCantidad.length === 0) {
-        alert('Selecciona al menos un producto.');
+        Swal.fire({
+          icon: 'warning',
+          title: 'Falta información',
+          text: 'Selecciona al menos un producto para continuar.',
+        });
         return;
       }
 
@@ -151,8 +156,14 @@ const AddProject = () => {
           { productos: productosConCantidad },
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        alert('Productos agregados correctamente');
-        navigate(`/projects/${editProjectId}`);
+        Swal.fire({
+          icon: 'success',
+          title: 'Productos agregados',
+          text: 'Los productos se agregaron correctamente al proyecto.',
+          confirmButtonColor: '#28a745',
+        }).then(() => {
+          navigate(`/projects/${editProjectId}`);
+        });
       } else {
         await axios.post(
           'http://localhost:8000/roomies/projects',
@@ -164,7 +175,14 @@ const AddProject = () => {
           },
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        navigate('/projects');
+        Swal.fire({
+          icon: 'success',
+          title: 'Proyecto creado',
+          text: 'El proyecto fue creado exitosamente.',
+          confirmButtonColor: '#28a745',
+        }).then(() => {
+          navigate('/projects');
+        });
       }
     } catch (err) {
       if (err.response) {
@@ -178,11 +196,11 @@ const AddProject = () => {
   };
 
   return (
-    <div>
+    <div className="add-project-container">
       <h1>
         {editProjectId ? 'Agregar productos al proyecto existente' : 'Crear nuevo proyecto'}
       </h1>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {error && <p className="error-message">{error}</p>}
 
       <form onSubmit={handleSubmit}>
         {!editProjectId && (
@@ -211,16 +229,19 @@ const AddProject = () => {
 
         <div>
           <label htmlFor="productos">Seleccionar Productos</label>
-          <Select
-            isMulti
-            name="productos"
-            options={productos.map(producto => ({
-              value: producto.id,
-              label: producto.nombre,
-            }))}
-            value={selectedProductos}
-            onChange={handleSelectProduct}
-          />
+          <div className="select-container">
+            <Select
+              isMulti
+              name="productos"
+              options={productos.map(producto => ({
+                value: producto.id,
+                label: producto.nombre,
+              }))}
+              value={selectedProductos}
+              onChange={handleSelectProduct}
+              classNamePrefix="react-select" // Para usar la clase personalizada de react-select
+            />
+          </div>
         </div>
 
         {selectedProductos.length > 0 && (
@@ -233,7 +254,7 @@ const AddProject = () => {
 
               return (
                 <div key={productId}>
-                  <label>{productData?.nombre}</label>
+                  <label className="producto-titulo">{productData?.nombre}</label>
                   {bodegaInventarios.map((bodega) => (
                     <div key={bodega.bodegaId}>
                       <label>
@@ -254,6 +275,7 @@ const AddProject = () => {
             })}
           </div>
         )}
+
         <button type="submit" className="btn btn-success">
           {editProjectId ? 'Guardar productos en el proyecto' : 'Crear proyecto'}
         </button>
@@ -265,9 +287,8 @@ const AddProject = () => {
         >
           Cancelar
         </button>
-
-
       </form>
+
       {/* Modal de Error */}
       <div className="modal fade" id="errorModal" tabIndex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
         <div className="modal-dialog modal-dialog-centered">

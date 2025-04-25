@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import Swal from 'sweetalert2';
+import '../styles/ProductDetails.css';
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -32,7 +34,11 @@ const ProductDetails = () => {
     if (userRole === 'admin') {
       setIsEditable(true);
     } else {
-      alert('No tienes permisos para editar');
+      Swal.fire({
+        icon: 'warning',
+        title: 'Acceso denegado',
+        text: 'No tienes permisos para editar.',
+      });      
     }
   };
   
@@ -60,12 +66,20 @@ const ProductDetails = () => {
       if (!response.ok) {
         throw new Error('Error al actualizar el inventario');
       }
-
-      alert('Inventario actualizado correctamente');
+      Swal.fire({
+        icon: 'success',
+        title: 'Inventario actualizado',
+        text: 'Los cambios se han guardado correctamente.',
+        confirmButtonColor: '#3cb424',
+      });      
       setIsEditable(false);  // Desactiva el modo edición
     } catch (error) {
       console.error(error);
-      alert('Hubo un error al actualizar el inventario');
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Hubo un error al actualizar el inventario.',
+      });      
     }
   };
 
@@ -78,7 +92,7 @@ const ProductDetails = () => {
   if (!product) return <div>Cargando...</div>;
 
   return (
-    <div>
+    <div className="product-details-container">
       <h3>Empresa: {product.empresa_id}</h3>
 
       {/* Mostrar detalles del producto */}
@@ -125,18 +139,17 @@ const ProductDetails = () => {
 
       {/* Botones de acción */}
 
-      <div>
-      {userRole === 'admin' && (
-        isEditable ? (
-          <>
-            <button onClick={handleGuardarCambios}>Guardar Cambios</button>
-            <button onClick={handleCancelarCambios}>Cancelar Cambios</button>
-          </>
-        ) : (
-          <button onClick={handleEnableEdit}>Actualizar</button>
-        )
-      )}
-
+      <div className="button-group">
+        {userRole === 'admin' && (
+          isEditable ? (
+            <>
+              <button onClick={handleGuardarCambios} className="button-seed button-save">Guardar Cambios</button>
+              <button onClick={handleCancelarCambios} className="button-seed button-cancel">Cancelar Cambios</button>
+            </>
+          ) : (
+            <button onClick={handleEnableEdit} className="button-seed button-edit">Actualizar</button>
+          )
+        )}
       </div>
     </div>
   );

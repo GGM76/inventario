@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import * as bootstrap from 'bootstrap';
 
@@ -95,7 +96,11 @@ const ProjectDetail = () => {
       .map(([id, cantidad]) => ({ id, cantidad }));
   
     if (productos.length === 0) {
-      alert('Debe ingresar al menos una cantidad válida.');
+      Swal.fire({
+        icon: 'warning',
+        title: 'Cantidad inválida',
+        text: 'Debes ingresar al menos una cantidad válida.',
+      });      
       return;
     }
   
@@ -116,17 +121,62 @@ const ProjectDetail = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
   
-      alert('Operación exitosa.');
-      window.location.reload();
+      Swal.fire({
+        icon: 'success',
+        title: 'Éxito',
+        text: 'La operación se realizó correctamente.',
+        confirmButtonColor: '#3085d6',
+      }).then(() => {
+        window.location.reload();
+      });      
     } catch (err) {
       console.error(err);
-      alert('Error al procesar la solicitud.');
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Hubo un error al procesar la solicitud.',
+      });      
     }
   };
   
   if (loading) return <p>Cargando...</p>;
   if (error) return <p className="text-danger">{error}</p>;
 
+  const handleDeleteProject = async () => {
+    const confirmDelete = await Swal.fire({
+      title: '¿Eliminar proyecto?',
+      text: 'Esta acción eliminará el proyecto y todos sus subproyectos. ¿Deseas continuar?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+    });
+    if (!confirmDelete.isConfirmed) return;
+
+    try {
+      await axios.delete(`http://localhost:8000/roomies/projects/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+  
+      Swal.fire({
+        icon: 'success',
+        title: 'Proyecto eliminado',
+        text: 'El proyecto fue eliminado correctamente.',
+      }).then(() => {
+        navigate('/projects');
+      });      
+    } catch (err) {
+      console.error(err);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error al eliminar',
+        text: 'No se pudo eliminar el proyecto.',
+      });      
+    }
+  };
+  
   return (
     <div className="container mt-4">
       <h1>Detalles del Proyecto</h1>
@@ -160,6 +210,13 @@ const ProjectDetail = () => {
         >
           Detalles de Uso
         </button>
+        <button
+          className="btn btn-danger"
+          onClick={handleDeleteProject}
+        >
+          Eliminar Proyecto
+        </button>
+
       </div>
     )}
       <ul>

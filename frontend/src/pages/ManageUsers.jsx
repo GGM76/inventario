@@ -1,7 +1,9 @@
+//src/pages/ManageUsers.jsx
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { fetchUsers, updateUserRole } from '../redux/reducers/userSlice'; // Acción para obtener usuarios y actualizar roles
+import '../styles/ManageUsers.css';
 
 const ManageUsers = () => {
   const dispatch = useDispatch();
@@ -43,7 +45,7 @@ const ManageUsers = () => {
   };
 
   return (
-    <div>
+    <div className="manage-users-page">
       <h1>Administrar Usuarios</h1>
 
       {/* Mostrar mensaje de error */}
@@ -56,10 +58,9 @@ const ManageUsers = () => {
         <p>No hay usuarios en esta empresa.</p>
       ) : (
         <div>
-          <table>
+          <table className="user-table">
             <thead>
               <tr>
-                <th>Nombre</th>
                 <th>Correo</th>
                 <th>Rol</th>
               </tr>
@@ -67,13 +68,11 @@ const ManageUsers = () => {
             <tbody>
               {users.map((user) => (
                 <tr key={user.id}>
-                  <td>{user.nombre}</td>
                   <td>{user.email}</td>
                   <td>
-                    {/* Menú desplegable para seleccionar el rol */}
                     <select
-                      value={roles[user.id] || user.role} // Si hay un rol seleccionado, usarlo, sino mostrar el rol actual
-                      onChange={(e) => handleRoleChange(user.id, e.target.value)} // Actualizar el rol en el estado
+                      value={roles[user.id] || user.role}
+                      onChange={(e) => handleRoleChange(user.id, e.target.value)}
                     >
                       <option value="usuario">Usuario</option>
                       <option value="admin">Admin</option>
@@ -83,6 +82,23 @@ const ManageUsers = () => {
               ))}
             </tbody>
           </table>
+
+          {/* Modo tarjeta para celular */}
+          <div>
+            {users.map((user) => (
+              <div className="user-card" key={user.id}>
+                <p><strong>Correo:</strong> {user.email}</p>
+                <p><strong>Rol:</strong></p>
+                <select
+                  value={roles[user.id] || user.role}
+                  onChange={(e) => handleRoleChange(user.id, e.target.value)}
+                >
+                  <option value="usuario">Usuario</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
+            ))}
+          </div>
           <button onClick={handleSave} style={{ marginTop: '20px' }}>
             Salvar
           </button>

@@ -1,0 +1,141 @@
+/* Contenedor general */
+.projects-container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 30px 20px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+}
+
+/* Título */
+.projects-container h1 {
+  text-align: center;
+  color: #2e7d32;
+  font-size: 2rem;
+  margin-bottom: 25px;
+}
+
+/* Sección de botones */
+.projects-actions-box {
+  background-color: #f8f8f8;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 30px;
+  text-align: center;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.05);
+}
+
+.projects-actions {
+  display: flex;
+  justify-content: space-between; /* Asegura que los botones se distribuyan */
+  align-items: center;
+  flex-wrap: wrap; /* Los botones pueden envolver en pantallas pequeñas */
+  gap: 15px;
+  width: 100%;
+}
+
+.projects-actions .action-left {
+  display: flex;
+  gap: 15px; /* Espacio entre los botones */
+  flex-wrap: wrap; /* Permite que los botones se ajusten cuando no caben */
+}
+
+.projects-actions .action-right {
+  display: flex;
+  gap: 15px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+/* Lista de proyectos */
+.projects-list-box {
+  background-color: #f0fdf4;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.05);
+}
+
+.projects-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+/* Estilo botones reutilizable */
+.button-seed {
+  flex: 1 1 200px;
+  min-width: 150px;
+  max-width: 250px; /* Limita el tamaño máximo de los botones */
+  padding: 10px 18px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos para cada tipo de botón */
+.button-seed.add {
+  background-color: #3cb424;
+  color: white;
+}
+.button-seed.add:hover {
+  background-color: #2e7d32;
+}
+
+.button-seed.dashboard {
+  background-color: #36654d;
+  color: white;
+}
+.button-seed.dashboard:hover {
+  background-color: #2c4f3c;
+}
+
+.button-seed.project {
+  background-color: #ffffff;
+  color: #333;
+  width: 100%;
+  max-width: 500px;
+  text-align: left;
+  padding: 12px 16px;
+  border: 1px solid #ddd;
+}
+.button-seed.project:hover {
+  background-color: #f5f5f5;
+}
+
+.button-seed.delete-all {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+}
+.button-seed.delete-all:hover {
+  background-color: #c82333;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .projects-actions {
+    flex-direction: column; /* Los botones se alinean en una columna en pantallas pequeñas */
+    gap: 10px;
+  }
+
+  .projects-actions .action-left,
+  .projects-actions .action-right {
+    justify-content: center;
+  }
+
+  .button-seed {
+    width: 100%;
+    max-width: 300px; /* Asegura que los botones no sean demasiado grandes */
+  }
+}

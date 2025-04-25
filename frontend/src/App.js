@@ -15,6 +15,9 @@ import Navbar from './components/Navbar';
 import AdminRoute from './components/AdminRoute';
 import MassProductUpload from './pages/MassProductUpload';
 import UseHistory from './pages/UseHistory';
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
+
 function App() {
   const location = useLocation();
   const hideNavbar =
@@ -25,7 +28,7 @@ function App() {
   return (
     <>
       {!hideNavbar && <Navbar />}
-
+      <ToastContainer />
       <Routes>
         {/* Público */}
         <Route path="/" element={<LoginPage />} />

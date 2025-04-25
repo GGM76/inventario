@@ -1,6 +1,8 @@
 //controlles/productController.js
 const { db } = require('../config/firebase');
 const { admin } = require('../config/firebase');
+const registerInventoryLog  = require('../services/registerInventoryLog');
+const registrarMovimientoInventario = require('../services/registerInventoryLog');
 
 // Obtener productos por empresa
 const getProducts = async (req, res) => {
@@ -288,6 +290,17 @@ const updateProductInventory = async (req, res) => {
         await db.collection('inventario').doc(inventarioDoc.id).update({
           cantidad: nuevaCantidad,
         });
+        
+        // Registrar en historial
+        await registerInventoryLog({
+          producto_id: productId,
+          bodega_id: bodegaId,
+          cantidad: cantidadSeleccionada,
+          tipo: 'uso',
+          usuario_id: req.user?.id || 'desconocido',
+          empresa_id: req.user?.empresa || 'desconocida',
+        });
+        
       }));
     }));
 
@@ -298,15 +311,13 @@ const updateProductInventory = async (req, res) => {
   }
 };
 
-// Nuevo controlador para actualizar manualmente el inventario
 const updateInventoryManual = async (req, res) => {
-  const { inventario } = req.body;  // inventario: [ { producto_id, bodega_id, nuevaCantidad } ]
+  const { inventario } = req.body;
 
   try {
     await Promise.all(inventario.map(async (item) => {
       const { producto_id, bodega_id, nuevaCantidad } = item;
 
-      // Buscar el documento de inventario correspondiente
       const inventarioSnapshot = await db.collection('inventario')
         .where('producto_id', '==', producto_id)
         .where('bodega_id', '==', bodega_id)
@@ -318,11 +329,39 @@ const updateInventoryManual = async (req, res) => {
         });
       }
 
-      // Actualizar la cantidad en el inventario
       const inventarioDoc = inventarioSnapshot.docs[0];
+      const cantidadAntes = inventarioDoc.data().cantidad;
+
+      // Actualizar inventario
       await db.collection('inventario').doc(inventarioDoc.id).update({
         cantidad: nuevaCantidad,
       });
+
+      // Obtener producto y bodega para log
+      const [productoDoc, bodegaDoc] = await Promise.all([
+        db.collection('productos').doc(producto_id).get(),
+        db.collection('bodegas').doc(bodega_id).get()
+      ]);
+
+      const producto_nombre = productoDoc.exists ? productoDoc.data().nombre : 'Producto no encontrado';
+      const bodega_nombre = bodegaDoc.exists ? bodegaDoc.data().nombre : 'Bodega no encontrada';
+
+      // Registrar log completo
+      await registrarMovimientoInventario({
+        producto_id,
+        producto_nombre,
+        empresa_id: req.user?.empresa || 'desconocida',
+        bodega_id,
+        bodega_nombre,
+        accion: 'ajuste_manual',
+        cantidad_antes: cantidadAntes,
+        cantidad_despues: nuevaCantidad,
+        cantidad_cambiada: nuevaCantidad - cantidadAntes,
+        usuario_id: req.user?.id || 'desconocido',
+        usuario_correo: req.user?.correo || 'sin_correo',
+        descripcion: `Ajuste manual de inventario realizado`
+      });
+
     }));
 
     res.status(200).json({ message: 'Inventario actualizado correctamente (modo manual)' });
@@ -331,6 +370,7 @@ const updateInventoryManual = async (req, res) => {
     res.status(500).json({ error: 'Error al actualizar manualmente el inventario.' });
   }
 };
+
 
 const updateInventoryHistory = async (req, res) => {
   const { productos } = req.body;  // Productos con las cantidades por bodega
@@ -400,32 +440,62 @@ const bulkProduct = async (req, res) => {
     }
 
     const db = admin.firestore();
-    const batch = db.batch(); // Para agrupar escrituras
-
+    const batch = db.batch();
     const empresaId = req.user.empresa;
 
+    const productosMap = new Map(); // clave -> { productoId, nombre, categoria, precio }
+
+    const productosConIds = [];
+
     for (const p of productos) {
+      const clave = p.clave?.trim();
+
       if (
-        p.clave && p.categoria && p.nombre && p.precio &&
+        clave && p.categoria && p.nombre && p.precio &&
         p.bodegaId && p.cantidad
       ) {
-        const productoRef = db.collection('productos').doc(); // genera ID único
+        let productoInfo;
 
-        batch.set(productoRef, {
-          clave: p.clave.trim(),
-          categoria: p.categoria.trim(),
-          nombre: p.nombre.trim(),
-          precio: parseFloat(p.precio),
+        // Si el producto ya fue procesado con la misma clave, reutilizamos su ID
+        if (productosMap.has(clave)) {
+          productoInfo = productosMap.get(clave);
+        } else {
+          // Creamos nuevo documento para este producto
+          const productoRef = db.collection('productos').doc();
+          const productoId = productoRef.id;
+
+          const productoData = {
+            clave,
+            categoria: p.categoria.trim(),
+            nombre: p.nombre.trim(),
+            precio: parseFloat(p.precio),
+            empresa_id: empresaId,
+          };
+
+          batch.set(productoRef, productoData);
+          productoInfo = { productoId, ...productoData };
+          productosMap.set(clave, productoInfo);
+        }
+
+        // Crear inventario por bodega
+        const inventarioRef = db.collection('inventario').doc();
+        const cantidad = parseInt(p.cantidad);
+        const bodegaId = p.bodegaId.trim();
+        const bodegaNombre = p.bodegaNombre?.trim() || 'Bodega desconocida';
+
+        batch.set(inventarioRef, {
+          producto_id: productoInfo.productoId,
+          bodega_id: bodegaId,
+          cantidad,
           empresa_id: empresaId,
         });
 
-        const inventarioRef = db.collection('inventario').doc();
-
-        batch.set(inventarioRef, {
-          producto_id: productoRef.id,
-          bodega_id: p.bodegaId.trim(),
-          cantidad: parseInt(p.cantidad),
-          empresa_id: empresaId,
+        productosConIds.push({
+          producto_id: productoInfo.productoId,
+          producto_nombre: productoInfo.nombre,
+          bodega_id: bodegaId,
+          bodega_nombre: bodegaNombre,
+          cantidad,
         });
       } else {
         console.warn('Fila omitida por campos incompletos:', p);
@@ -433,6 +503,24 @@ const bulkProduct = async (req, res) => {
     }
 
     await batch.commit();
+
+    await Promise.all(productosConIds.map(async (item) => {
+      await registrarMovimientoInventario({
+        producto_id: item.producto_id,
+        producto_nombre: item.producto_nombre,
+        empresa_id: empresaId,
+        bodega_id: item.bodega_id,
+        bodega_nombre: item.bodega_nombre,
+        accion: 'registro_inicial',
+        cantidad_antes: 0,
+        cantidad_despues: item.cantidad,
+        cantidad_cambiada: item.cantidad,
+        usuario_id: req.user?.id || 'desconocido',
+        usuario_correo: req.user?.correo || 'sin_correo',
+        descripcion: 'Carga inicial del producto en inventario'
+      });
+    }));
+
     return res.status(201).json({ message: 'Productos e inventario agregados correctamente.' });
 
   } catch (error) {
@@ -440,7 +528,6 @@ const bulkProduct = async (req, res) => {
     return res.status(500).json({ error: 'Error al guardar los productos.' });
   }
 };
-
 
 
 module.exports = { 

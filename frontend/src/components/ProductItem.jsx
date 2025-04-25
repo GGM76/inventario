@@ -1,6 +1,7 @@
 // src/components/ProductItem.js
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import '../styles/ProductItem.css';
 
 const ProductItem = ({ product, handleDelete, userRole }) => {
   const navigate = useNavigate();
@@ -18,13 +19,24 @@ const ProductItem = ({ product, handleDelete, userRole }) => {
       <p>Cantidad total: {totalQuantity.toLocaleString()}</p> {/* Usando toLocaleString para agregar comas a los números grandes */}
       <p>Precio: ${product.precio}</p>
 
-      {/* Mostrar el botón de eliminar solo si el usuario es admin */}
-      {userRole === 'admin' && (
-        <button onClick={() => handleDelete(product.id)} className="delete-button">Eliminar</button>
-      )}
+      <div className="button-group">
+  {userRole === 'admin' && (
+    <button
+      onClick={() => handleDelete(product.id)}
+      className="btn-seed delete"
+    >
+      Eliminar
+    </button>
+  )}
+  <button
+    onClick={handleClick}
+    className="btn-seed details"
+  >
+    Detalles
+  </button>
+</div>
 
-      {/* Botón para ver detalles del producto */}
-      <button onClick={handleClick} className="details-button">Ver detalles</button>
+
     </div>
   );
 };

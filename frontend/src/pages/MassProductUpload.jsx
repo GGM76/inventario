@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import * as XLSX from 'xlsx';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 
 const MassProductUpload = () => {
@@ -8,6 +10,7 @@ const MassProductUpload = () => {
   const [productos, setProductos] = useState([]);
   const [error, setError] = useState(null);
   const [bodegas, setBodegas] = useState([]);
+  const navigate = useNavigate();
   const token = localStorage.getItem('authToken');
   const empresaId = localStorage.getItem('userEmpresaId');
 
@@ -56,8 +59,21 @@ const MassProductUpload = () => {
 
   // Subir los productos al backend
   const handleUpload = async () => {
-    if (!file) return alert("Por favor, selecciona un archivo.");
-    if (productos.length === 0) return alert("No hay productos para subir.");
+    if (!file) {
+      return Swal.fire({
+        icon: 'warning',
+        title: 'Archivo faltante',
+        text: 'Por favor, selecciona un archivo Excel antes de continuar.',
+      });
+    }
+    
+    if (productos.length === 0) {
+      return Swal.fire({
+        icon: 'warning',
+        title: 'Sin productos',
+        text: 'No hay productos para subir. Verifica el contenido del archivo.',
+      });
+    }    
 
     try {
       await axios.post('http://localhost:8000/roomies/productos/masivos', {
@@ -69,12 +85,23 @@ const MassProductUpload = () => {
         }
       });
 
-      alert("Productos agregados correctamente.");
+      Swal.fire({
+        icon: 'success',
+        title: '¡Carga exitosa!',
+        text: 'Los productos fueron agregados correctamente al sistema.',
+        confirmButtonColor: '#28a745',
+      }).then(() => {
+        navigate('/dashboard'); // o a la ruta que desees
+      });  
       setFile(null);
       setProductos([]);
     } catch (err) {
       console.error(err);
-      alert("Error al subir los productos.");
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Hubo un problema al subir los productos. Intenta nuevamente.',
+      });      
     }
   };
 

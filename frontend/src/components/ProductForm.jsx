@@ -1,6 +1,7 @@
-// src/components/ProductForm.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
+import '../styles/ProductForm.css';
 
 const ProductForm = ({ onSave, empresaId }) => {
   const navigate = useNavigate();
@@ -25,8 +26,22 @@ const ProductForm = ({ onSave, empresaId }) => {
 
   // Función para manejar la cancelación
   const handleCancel = () => {
-    navigate('/dashboard');  // Redirigir al Dashboard si el usuario cancela
+    Swal.fire({
+      title: '¿Cancelar?',
+      text: 'Los cambios no guardados se perderán.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, cancelar',
+      cancelButtonText: 'No, volver',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        navigate('/dashboard');
+      }
+    });
   };
+  
 
   return (
     <form onSubmit={handleSubmit}>
@@ -73,7 +88,6 @@ const ProductForm = ({ onSave, empresaId }) => {
         <button 
           type="submit"
           className="btn btn-primary"
-          style={{ marginRight: '10px' }}  // Espaciado entre botones
         >
           Guardar
         </button>

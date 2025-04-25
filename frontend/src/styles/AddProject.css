@@ -1,0 +1,77 @@
+/* src/pages/AddProject.css */
+.add-project-container {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  label {
+    font-size: 14px;
+    font-weight: bold;
+  }
+  
+  input, select, textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  
+  input[type="text"] {
+    width: 50%;
+  }
+  
+  input[type="number"] {
+    width: 25%;
+    padding: 8px;
+    margin-bottom: 10px;
+  }
+  
+  textarea {
+    height: 150px;
+  }
+  
+  .select-container {
+    width: 100%;
+    margin-bottom: 50px;
+  }
+
+  
+  /* Reducir la altura de Select */
+  .react-select__control {
+    height: 90px;
+    padding: 5px;
+  }
+  
+  /* Estilo para los productos seleccionados */
+  .react-select__multi-value {
+    display: inline-flex;
+    margin: 5px;
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 20px;
+    font-size: 14px;
+    margin-right: 8px;
+  }
+  
+  .react-select__multi-value__label {
+    font-size: 14px;
+  }
+  
+  /* Cambiar el layout para los productos seleccionados */
+  .react-select__multi-value__remove {
+    cursor: pointer;
+    padding-left: 5px;
+    color: #fff;
+    font-size: 18px;
+  }
+
+  .producto-titulo {
+  font-size: 1.3rem; /* Más grande */
+  font-weight: bold;
+  color: #17a2b8; /* Azul verdoso */
+  margin-top: 20px;
+  display: block;
+}

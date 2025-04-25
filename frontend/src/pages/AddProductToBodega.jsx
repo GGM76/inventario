@@ -1,6 +1,8 @@
 // src/pages/AddProductToBodega.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
+
 
 const AddProductToBodega = () => {
   const navigate = useNavigate();
@@ -59,9 +61,13 @@ const AddProductToBodega = () => {
     e.preventDefault();
 
     if (!productoId || !bodegaId || !cantidad) {
-      alert('Por favor completa todos los campos.');
+      Swal.fire({
+        icon: 'warning',
+        title: 'Campos incompletos',
+        text: 'Por favor completa todos los campos.',
+      });
       return;
-    }
+    }    
 
     // Asegúrate de enviar también el ID de la empresa (userEmpresaId)
     try {
@@ -82,15 +88,31 @@ const AddProductToBodega = () => {
       const result = await response.json();
 
       if (response.ok) {
-        alert('Producto agregado a la bodega con éxito.');
+        await Swal.fire({
+          icon: 'success',
+          title: '¡Éxito!',
+          text: 'Producto agregado a la bodega con éxito.',
+          confirmButtonColor: '#3cb424',
+        });
         navigate('/dashboard');
-      } else {
-        alert(result.error || 'Hubo un error al agregar el producto a la bodega.');
       }
+      else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: result.error || 'Hubo un error al agregar el producto a la bodega.',
+        });
+      }
+      
     } catch (error) {
       console.error('Error al agregar producto a bodega:', error);
-      alert('Hubo un error al agregar el producto a la bodega.');
+      Swal.fire({
+        icon: 'error',
+        title: 'Error inesperado',
+        text: 'Hubo un error al agregar el producto a la bodega.',
+      });
     }
+    
   };
 
   // Función para manejar la cancelación

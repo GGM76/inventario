@@ -1,47 +1,44 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase/config";
-import { db } from "../firebase/config";  // Importar Firestore
-import { doc, getDoc } from "firebase/firestore"; // Para obtener los datos del usuario
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom"; // Importa Link de react-router-dom
-import '../styles/LoginPage.css'; // Asegúrate de que la ruta sea correcta
+import { auth, db } from "../firebase/config";
+import { doc, getDoc } from "firebase/firestore";
+import { useNavigate, Link } from "react-router-dom";
+import '../styles/LoginPage.css';
 
 const LoginPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [fadeIn, setFadeIn] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        setFadeIn(true);
+    }, []);
+
+    const togglePasswordVisibility = () => {
+        setShowPassword((prev) => !prev);
+      };
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        setError(''); // Limpiar errores previos
-
+        setError('');
         try {
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
             const token = await user.getIdToken();
 
-            // Obtener los datos del usuario desde Firestore
             const userDoc = await getDoc(doc(db, "users", user.uid));
-            if (!userDoc.exists()) {
-                console.error("Documento no encontrado para el usuario", user.uid);
-                throw new Error("No se encontraron los datos del usuario.");
-            }
+            if (!userDoc.exists()) throw new Error("No se encontraron los datos del usuario.");
 
-            if (userDoc.exists()) {
-                const userData = userDoc.data();
-                const { role, empresa_id } = userData;
-                if (!empresa_id) {
-                    throw new Error("El usuario no tiene una empresa asignada.");
-                }
+            const { role, empresa_id } = userDoc.data();
+            if (!empresa_id) throw new Error("El usuario no tiene una empresa asignada.");
 
-                // Guardar los datos en localStorage
-                localStorage.setItem('authToken', token);
-                localStorage.setItem('userRole', role);
-                localStorage.setItem('userEmpresaId', empresa_id);
-                localStorage.setItem('userEmail', user.email); // Guardar el correo electrónico
-            }
+            localStorage.setItem('authToken', token);
+            localStorage.setItem('userRole', role);
+            localStorage.setItem('userEmpresaId', empresa_id);
+            localStorage.setItem('userEmail', user.email);
 
             navigate('/dashboard');
         } catch (error) {
@@ -51,30 +48,43 @@ const LoginPage = () => {
     };
 
     return (
-        <div className="login-container">
-            <div className="login-form">
-                <h2>Login</h2>
-                {error && <p className="error-message">{error}</p>}
+        <div className="login-bg d-flex align-items-center justify-content-center">
+            <div className={`login-card card shadow-lg ${fadeIn ? 'fade-slide' : ''}`}>
+                <h2 className="text-center mb-4">Iniciar sesión</h2>
+                {error && <div className="alert alert-danger">{error}</div>}
                 <form onSubmit={handleLogin}>
-                    <input 
-                        type="email" 
-                        value={email} 
-                        onChange={(e) => setEmail(e.target.value)} 
-                        placeholder="Correo electrónico" 
-                        required
-                    />
-                    <input 
-                        type="password" 
-                        value={password} 
-                        onChange={(e) => setPassword(e.target.value)} 
-                        placeholder="Contraseña" 
-                        required
-                    />
-                    <button type="submit">Iniciar sesión</button>
-                </form>
+                    <div className="mb-3">
+                        <label className="form-label">Correo electrónico</label>
+                        <input 
+                            type="email" 
+                            className="form-control" 
+                            value={email} 
+                            onChange={(e) => setEmail(e.target.value)} 
+                            placeholder="tu@email.com" 
+                            required 
+                        />
+                    </div>
+                    <div className="mb-4 password-wrapper">
+                        <label className="form-label">Contraseña</label>
+                        <div className="password-input-group">
+                            <input 
+                            type={showPassword ? "text" : "password"}
+                            className="form-control"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="********"
+                            required
+                            />
+                            <span className="toggle-password" onClick={togglePasswordVisibility}>
+                            {showPassword ? "🙈" : "👁️"}
+                            </span>
+                        </div>
+                    </div>
 
-                <div className="register-link">
-                    <p>¿No tienes cuenta? <Link to="/register">Regístrate aquí</Link></p>
+                    <button type="submit" className="btn glass-btn w-100 mb-3">Iniciar sesión</button>
+                </form>
+                <div className="text-center">
+                    <p className="register-link-text">¿No tienes cuenta? <Link to="/register" className="link-primary">Regístrate aquí</Link></p>
                 </div>
             </div>
         </div>

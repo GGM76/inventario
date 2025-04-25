@@ -1,79 +1,78 @@
-/* Estilo general para el contenedor del login */
-.login-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background-color: #f0f2f5;
-  font-family: Arial, sans-serif;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+.login-bg {
+  min-height: 100vh;
+  background: url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1650&q=80') center/cover no-repeat;
+  backdrop-filter: blur(4px);
+  padding: 2rem;
+  font-family: 'Inter', sans-serif;
 }
 
-/* Estilo para el formulario de login */
-.login-form {
-  background-color: white;
-  padding: 30px;
+.login-card {
+  max-width: 500px;
+  width: 100%;
+  padding: 2.5rem;
+  border-radius: 16px;
+  background-color: rgba(255, 255, 255, 0.95);
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.6s ease-out;
+}
+
+.login-card.fade-slide {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+input.form-control {
+  font-size: 1rem;
+  padding: 0.75rem;
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 400px;
 }
 
-/* Título */
-.login-form h2 {
-  text-align: center;
-  margin-bottom: 20px;
-  font-size: 24px;
-  color: #333;
-}
-
-/* Estilo de los campos de entrada */
-.login-form input {
-  width: 100%;
-  padding: 12px;
-  margin: 10px 0;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
-  color: #333;
-}
-
-/* Estilo del botón de login */
-.login-form button {
-  width: 100%;
-  padding: 12px;
-  background-color: #4CAF50;
-  color: white;
+.glass-btn {
+  background: rgba(0, 123, 255, 0.85);
   border: none;
-  border-radius: 4px;
-  font-size: 16px;
+  color: white;
+  font-weight: 600;
+  padding: 0.75rem;
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+.glass-btn:hover {
+  background: rgba(0, 123, 255, 1);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+.register-link-text {
+  font-size: 0.95rem;
+  color: #495057;
+}
+
+.password-wrapper {
+  position: relative;
+}
+
+.password-input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-group input {
+  padding-right: 2.5rem;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 10px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  font-size: 1.2rem;
+  color: #6c757d;
+  transition: color 0.3s ease;
 }
 
-/* Estilo para el botón cuando está en hover */
-.login-form button:hover {
-  background-color: #45a049;
-}
-
-/* Estilo para los mensajes de error */
-.error-message {
-  color: red;
-  font-size: 14px;
-  margin-bottom: 10px;
-}
-
-/* Enlace de registro */
-.register-link {
-  text-align: center;
-  margin-top: 15px;
-}
-
-.register-link a {
-  color: #4CAF50;
-  text-decoration: none;
-  font-size: 14px;
-}
-
-.register-link a:hover {
-  text-decoration: underline;
+.toggle-password:hover {
+  color: #495057;
 }

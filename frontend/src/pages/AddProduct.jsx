@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { addProduct, fetchProducts } from '../redux/reducers/productSlice'; // Usamos Redux en lugar de API directa
 import axios from 'axios';
+import Swal from 'sweetalert2';
+import '../styles/AddProductPage.css';
 
 const AddProductPage = () => {
   const dispatch = useDispatch();
@@ -36,12 +38,22 @@ const AddProductPage = () => {
   
       // Después de agregar el producto, actualizar la lista de productos
       dispatch(fetchProducts());  // Recargar productos desde el backend
-  
+      Swal.fire({
+        icon: 'success',
+        title: '¡Producto agregado!',
+        text: 'El producto se ha agregado exitosamente.',
+        confirmButtonText: 'Aceptar',
+      });
       console.log('Producto agregado exitosamente');
       navigate('/dashboard');  // Redirigir a la página del dashboard después de agregar el producto
     } catch (error) {
       console.error('Error agregando producto:', error);
-      alert('Hubo un error al agregar el producto. Inténtalo nuevamente.');
+      Swal.fire({
+        icon: 'error',
+        title: '¡Error!',
+        text: 'Hubo un error al agregar el producto. Inténtalo nuevamente.',
+        confirmButtonText: 'Aceptar',
+      });
     }
   };
 

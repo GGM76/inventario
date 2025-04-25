@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Select from 'react-select';
+import Swal from 'sweetalert2';
 
 const AddSubproject = () => {
   const { projectId } = useParams();  // ID del proyecto principal
@@ -66,9 +67,14 @@ const AddSubproject = () => {
     const maxCantidad = producto?.cantidadDisponible || 0;
 
     if (quantity > maxCantidad) {
-      alert(`No puedes seleccionar más de ${maxCantidad} unidades para este producto.`);
+      Swal.fire({
+        icon: 'warning',
+        title: 'Cantidad excedida',
+        text: `No puedes seleccionar más de ${maxCantidad} unidades para este producto.`,
+        confirmButtonColor: '#ffc107',
+      });
       quantity = maxCantidad;
-    }
+    }    
 
     setProductQuantities(prev => ({
       ...prev,
@@ -101,11 +107,24 @@ const AddSubproject = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
   
-      alert('Subproyecto agregado correctamente');
-      navigate(`/projects/${projectId}`);
+      Swal.fire({
+        icon: 'success',
+        title: '¡Subproyecto creado!',
+        text: 'El subproyecto se agregó correctamente.',
+        confirmButtonColor: '#28a745',
+      }).then(() => {
+        navigate(`/projects/${projectId}`);
+      });
+      
     } catch (err) {
       console.error(err);
-      setError('Hubo un error al agregar el subproyecto.');
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Hubo un error al agregar el subproyecto.',
+        confirmButtonColor: '#dc3545',
+      });
+      
     } finally {
       setLoading(false);
     }
