@@ -9,7 +9,7 @@ let serviceAccount;
 if (process.env.GOOGLE_CREDENTIALS) {
   try {
     // Detecta si el contenido ya tiene \\n o solo \n
-    const credString = process.env.GOOGLE_CREDENTIALS.includes('\\n')
+    const credString = process.env.GOOGLE_CREDENTIALS.replace(/__LINE__/g, '\n')//process.env.GOOGLE_CREDENTIALS.includes('\\n')
       ? process.env.GOOGLE_CREDENTIALS.replace(/\\n/g, '\n') // Render u otros
       : process.env.GOOGLE_CREDENTIALS;                     // Local mal configurado
 
