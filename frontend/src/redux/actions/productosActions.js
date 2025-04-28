@@ -4,7 +4,7 @@ import axios from 'axios';
 export const getProductos = (empresa_id) => async (dispatch) => {
   try {
     const token = localStorage.getItem('token');
-    const response = await axios.get(`http://localhost:5000/api/productos/${empresa_id}`, {
+    const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/productos/${empresa_id}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     dispatch({

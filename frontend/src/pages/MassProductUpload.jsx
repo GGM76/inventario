@@ -18,7 +18,7 @@ const MassProductUpload = () => {
   useEffect(() => {
     const fetchBodegas = async () => {
       try {
-        const res = await fetch(`http://localhost:8000/roomies/bodegas?empresa_id=${empresaId}`, {
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/roomies/bodegas?empresa_id=${empresaId}`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -76,7 +76,7 @@ const MassProductUpload = () => {
     }    
 
     try {
-      await axios.post('http://localhost:8000/roomies/productos/masivos', {
+      await axios.post(`${process.env.REACT_APP_API_URL}/roomies/productos/masivos`, {
         productos,
       }, {
         headers: {

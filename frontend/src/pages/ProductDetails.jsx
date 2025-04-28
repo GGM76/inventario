@@ -12,7 +12,7 @@ const ProductDetails = () => {
 
   useEffect(() => {
     const fetchProductDetails = async () => {
-      const response = await fetch(`http://localhost:8000/roomies/products/${id}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/roomies/products/${id}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
         },
@@ -54,7 +54,7 @@ const ProductDetails = () => {
         nuevaCantidad: parseInt(bodega.cantidad, 10),
       }));
 
-      const response = await fetch('http://localhost:8000/roomies/update-inventory-manual', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/roomies/update-inventory-manual`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

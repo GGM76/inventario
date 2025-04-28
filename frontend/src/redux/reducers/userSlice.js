@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 // Acción para obtener los usuarios
 export const fetchUsers  = createAsyncThunk('users/fetchUsers', async (empresaId) => {
-  const response = await fetch(`http://localhost:8000/roomies/users?empresa_id=${empresaId}`, {  // Cambié 'empresa' por 'empresa_id'
+  const response = await fetch(`${process.env.REACT_APP_API_URL}/roomies/users?empresa_id=${empresaId}`, {  // Cambié 'empresa' por 'empresa_id'
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -18,7 +18,7 @@ export const fetchUsers  = createAsyncThunk('users/fetchUsers', async (empresaId
 
 // Acción para actualizar el rol de un usuario
 export const updateUserRole = createAsyncThunk('users/updateUserRole', async ({ userId, role, empresa_id }) => {
-  const response = await fetch(`http://localhost:8000/roomies/users/${userId}`, {
+  const response = await fetch(`${process.env.REACT_APP_API_URL}/roomies/users/${userId}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',

@@ -20,7 +20,7 @@ const AddProductToBodega = () => {
     const fetchData = async () => {
       try {
         // Obtener los productos (se asume que la API devuelve productos filtrados por la empresa)
-        const productosResponse = await fetch(`http://localhost:8000/roomies/products?empresa_id=${userEmpresaId}`, {
+        const productosResponse = await fetch(`${process.env.REACT_APP_API_URL}/roomies/products?empresa_id=${userEmpresaId}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
           },
@@ -35,7 +35,7 @@ const AddProductToBodega = () => {
         }
   
         // Obtener las bodegas (se asume que la API devuelve bodegas filtradas por la empresa)
-        const bodegasResponse = await fetch(`http://localhost:8000/roomies/bodegas?empresa_id=${userEmpresaId}`, {
+        const bodegasResponse = await fetch(`${process.env.REACT_APP_API_URL}/roomies/bodegas?empresa_id=${userEmpresaId}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
           },
@@ -71,7 +71,7 @@ const AddProductToBodega = () => {
 
     // Asegúrate de enviar también el ID de la empresa (userEmpresaId)
     try {
-      const response = await fetch('http://localhost:8000/roomies/addProductToBodega', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/roomies/addProductToBodega`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -11,7 +11,7 @@ export const fetchProjects = createAsyncThunk(
     }
 
     try {
-      const response = await fetch(`http://localhost:8000/roomies/projects?empresa_id=${empresaId}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/roomies/projects?empresa_id=${empresaId}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,  // Agregar el token en las cabeceras

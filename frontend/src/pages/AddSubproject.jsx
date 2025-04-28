@@ -19,7 +19,7 @@ const AddSubproject = () => {
   useEffect(() => {
     const fetchProjectDetails = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/roomies/projects/${projectId}`, {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/roomies/projects/${projectId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -98,7 +98,7 @@ const AddSubproject = () => {
       });
   
       // Petición POST al backend
-      await axios.post(`http://localhost:8000/roomies/subprojects`, {
+      await axios.post(`${process.env.REACT_APP_API_URL}/roomies/subprojects`, {
         nombre,
         descripcion,
         proyectoPrincipalId: projectId,

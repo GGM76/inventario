@@ -22,7 +22,7 @@ const BodegaFormModal = ({ onClose, onSuccess }) => {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:8000/roomies/bodegas', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/roomies/bodegas`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

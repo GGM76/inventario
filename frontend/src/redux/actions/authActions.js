@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8000/roomies'; // Usamos una constante para la URL base
+const API_URL = process.env.REACT_APP_API_URL; // Usamos una constante para la URL base
 
 // Acción de login
 export const login = (email, password) => async (dispatch) => {

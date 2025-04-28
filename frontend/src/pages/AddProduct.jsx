@@ -27,7 +27,7 @@ const AddProductPage = () => {
 
       // Agregar el producto usando Redux, pero primero enviamos el token en las cabeceras
       await axios.post(
-        'http://localhost:8000/roomies/products',  // URL del backend para agregar el producto
+        `${process.env.REACT_APP_API_URL}/roomies/products`,
         product,
         {
           headers: {

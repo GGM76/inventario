@@ -24,12 +24,12 @@ const ProjectDetail = () => {
   useEffect(() => {
     const fetchDetails = async () => {
       try {
-        const projectRes = await axios.get(`http://localhost:8000/roomies/projects/${id}`, {
+        const projectRes = await axios.get(`${process.env.REACT_APP_API_URL}/roomies/projects/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setProject(projectRes.data);
 
-        const subRes = await axios.get(`http://localhost:8000/roomies/subprojects/${id}`, {
+        const subRes = await axios.get(`${process.env.REACT_APP_API_URL}/roomies/subprojects/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setSubprojects(subRes.data || []);
@@ -108,13 +108,13 @@ const ProjectDetail = () => {
       let endpoint = '';
   
       if (modalAction === 'add') {
-        endpoint = `http://localhost:8000/roomies/subprojects/${selectedSubproject.id}/add-products`;
+        endpoint = `${process.env.REACT_APP_API_URL}/roomies/subprojects/${selectedSubproject.id}/add-products`;
       } else if (modalAction === 'return') {
-        endpoint = `http://localhost:8000/roomies/subprojects/${selectedSubproject.id}/devolver-productos`;
+        endpoint = `${process.env.REACT_APP_API_URL}/roomies/subprojects/${selectedSubproject.id}/devolver-productos`;
       } else if (modalAction === 'use') {
         endpoint = selectedSubproject
-          ? `http://localhost:8000/roomies/subprojects/${selectedSubproject.id}/usar-productos`
-          : `http://localhost:8000/roomies/projects/${id}/usar-productos`;
+          ? `${process.env.REACT_APP_API_URL}/roomies/subprojects/${selectedSubproject.id}/usar-productos`
+          : `${process.env.REACT_APP_API_URL}/roomies/projects/${id}/usar-productos`;
       }
   
       await axios.put(endpoint, { productos }, {
@@ -156,7 +156,7 @@ const ProjectDetail = () => {
     if (!confirmDelete.isConfirmed) return;
 
     try {
-      await axios.delete(`http://localhost:8000/roomies/projects/${id}`, {
+      await axios.delete(`${process.env.REACT_APP_API_URL}/roomies/projects/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
   

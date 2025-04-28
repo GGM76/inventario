@@ -18,7 +18,7 @@ import {
 export const addProduct = createAsyncThunk(
   'products/addProduct',
   async (newProduct) => {
-    const response = await fetch('http://localhost:8000/roomies/products', {
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/roomies/products`, {
       method: 'POST',
       body: JSON.stringify(newProduct),
       headers: {
@@ -36,7 +36,7 @@ export const addProduct = createAsyncThunk(
 export const editProduct = createAsyncThunk(
   'products/editProduct',
   async (updatedProduct) => {
-    const response = await fetch(`http://localhost:8000/roomies/products/${updatedProduct.id}`, {
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/roomies/products/${updatedProduct.id}`, {
       method: 'PUT',
       body: JSON.stringify(updatedProduct),
       headers: {
@@ -54,7 +54,7 @@ export const editProduct = createAsyncThunk(
 export const deleteProduct = createAsyncThunk(
   'products/deleteProduct',
   async (productId) => {
-    const response = await fetch(`http://localhost:8000/roomies/products/${productId}`, {
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/roomies/products/${productId}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
@@ -70,7 +70,7 @@ export const deleteProduct = createAsyncThunk(
 // Acción para obtener productos desde el backend
 export const fetchProducts = createAsyncThunk('products/fetchProducts', async (companyId) => {
     const userCompany = String(localStorage.getItem('userEmpresaId')); // Asegúrate de convertirlo a una cadena
-    const response = await fetch(`http://localhost:8000/roomies/products?empresa_id=${userCompany}`, {
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/roomies/products?empresa_id=${userCompany}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -89,7 +89,7 @@ export const fetchProducts = createAsyncThunk('products/fetchProducts', async (c
 export const fetchProductTotalQuantity = createAsyncThunk(
     'products/fetchProductTotalQuantity',
     async ({ productoId, empresaId }) => {
-        const response = await fetch(`http://localhost:8000/roomies/product-total-quantity?productoId=${productoId}&empresa_id=${empresaId}`, {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/roomies/product-total-quantity?productoId=${productoId}&empresa_id=${empresaId}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

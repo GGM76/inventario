@@ -30,7 +30,7 @@ const Projects = () => {
       let allHistories = [];
   
       for (const project of projects) {
-        const response = await fetch(`http://localhost:8000/roomies/projects/${project.id}/historial`, {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/roomies/projects/${project.id}/historial`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -123,7 +123,7 @@ const Projects = () => {
     try {
       // Lógica para eliminar todos los proyectos uno por uno
       for (const project of projects) {
-        await fetch(`http://localhost:8000/roomies/projects/${project.id}`, {
+        await fetch(`${process.env.REACT_APP_API_URL}/roomies/projects/${project.id}`, {
           method: 'DELETE',
           headers: {
             Authorization: `Bearer ${localStorage.getItem('authToken')}`,

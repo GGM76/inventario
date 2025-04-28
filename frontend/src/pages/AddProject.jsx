@@ -27,7 +27,7 @@ const AddProject = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/roomies/products?empresa_id=${userEmpresaId}`, {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/roomies/products?empresa_id=${userEmpresaId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
 
@@ -59,7 +59,7 @@ const AddProject = () => {
 
   const fetchProductInventory = async (productId) => {
     try {
-      const response = await axios.get(`http://localhost:8000/roomies/product-inventory?productoId=${productId}&empresa_id=${userEmpresaId}`, {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/roomies/product-inventory?productoId=${productId}&empresa_id=${userEmpresaId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       return response.data.bodegaInventarios || [];
@@ -152,7 +152,7 @@ const AddProject = () => {
 
       if (editProjectId) {
         await axios.put(
-          `http://localhost:8000/roomies/projects/${editProjectId}/add-products`,
+          `${process.env.REACT_APP_API_URL}/roomies/projects/${editProjectId}/add-products`,
           { productos: productosConCantidad },
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -166,7 +166,7 @@ const AddProject = () => {
         });
       } else {
         await axios.post(
-          'http://localhost:8000/roomies/projects',
+          `${process.env.REACT_APP_API_URL}/roomies/projects`,
           {
             nombre,
             descripcion,
