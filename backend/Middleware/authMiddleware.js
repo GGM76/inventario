@@ -2,6 +2,8 @@ const { admin } = require('../config/firebase');  // Accede correctamente a `adm
 
 const authenticateToken = async (req, res, next) => {
   const token = req.headers['authorization'] && req.headers['authorization'].split(' ')[1];
+  console.log('Firebase initialized for:', serviceAccount.project_id);
+  console.log('Token recibido:', token);
 
   if (!token) {
     return res.status(401).json({ error: 'Token no proporcionado.' });
