@@ -2,31 +2,25 @@ const { admin } = require('../config/firebase');  // Accede correctamente a `adm
 
 const authenticateToken = async (req, res, next) => {
   const token = req.headers['authorization'] && req.headers['authorization'].split(' ')[1];
-  console.log('Token recibido:', token);  // Log del token que llega
+  
 
   if (!token) {
-    console.log('No se proporcionó un token.');
     return res.status(401).json({ error: 'Token no proporcionado.' });
   }
 
   try {
     // Verificar token
-    console.log('Verificando token...');
     const decodedToken = await admin.auth().verifyIdToken(token);  
-    console.log('Token verificado:', decodedToken);  // Log del token verificado
 
     // Buscar el usuario en Firestore para obtener rol y empresa
-    console.log('Buscando usuario en Firestore con UID:', decodedToken.uid);
     const userRef = admin.firestore().collection('users').doc(decodedToken.uid);
     const userDoc = await userRef.get();
     
     if (!userDoc.exists) {
-      console.log('Usuario no encontrado en Firestore.');
       return res.status(404).json({ error: 'Usuario no encontrado.' });
     }
 
     const userData = userDoc.data();
-    console.log('Datos del usuario obtenidos:', userData);  // Log de los datos del usuario
 
     req.user = { ...decodedToken, role: userData.role, empresa: userData.empresa_id }; 
     next();  // Continuar a la siguiente función (controlador)
