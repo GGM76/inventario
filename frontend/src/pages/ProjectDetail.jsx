@@ -5,6 +5,7 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import * as bootstrap from 'bootstrap';
+import * as XLSX from 'xlsx';
 
 
 const ProjectDetail = () => {
@@ -90,6 +91,13 @@ const ProjectDetail = () => {
     return 0;
   };
   
+  const exportToExcel = (data, filename) => {
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Inventario');
+    XLSX.writeFile(workbook, `${filename}.xlsx`);
+  };
+
   const handleSubmit = async () => {
     const productos = Object.entries(productSelection)
       .filter(([, cantidad]) => cantidad > 0)
@@ -187,6 +195,18 @@ const ProjectDetail = () => {
       {userRole === 'admin' && (
       <div className="d-flex gap-3 mb-3">
         <button
+          className="btn btn-outline-success mb-2"
+          onClick={() => {
+            const data = project.productos.map(p => ({
+              Producto: p.nombre,
+              Cantidad: p.cantidadTotal
+            }));
+            exportToExcel(data, `Inventario_Proyecto_${project.nombre}`);
+          }}
+        >
+          Descargar Inventario
+        </button>
+        <button
           className="btn btn-outline-primary"
           onClick={() => navigate(`/projects/${id}/add-products`)}
         >
@@ -258,6 +278,19 @@ const ProjectDetail = () => {
                 >
                   Usar Productos
                 </button>
+                <button
+                  className="btn btn-sm btn-outline-success my-2"
+                  onClick={() => {
+                    const data = sp.productos.map(p => ({
+                      Producto: p.nombre,
+                      Cantidad: p.cantidad
+                    }));
+                    exportToExcel(data, `Inventario_Subproyecto_${sp.nombre}`);
+                  }}
+                >
+                  Descargar Inventario Subproyecto
+                </button>
+
               </div>
             )}
             </li>
