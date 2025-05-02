@@ -195,7 +195,7 @@ const ProjectDetail = () => {
       {userRole === 'admin' && (
       <div className="d-flex gap-3 mb-3">
         <button
-          className="btn btn-outline-success mb-2"
+          className="btn btn-success me-2"
           onClick={() => {
             const data = project.productos.map(p => ({
               Producto: p.nombre,
@@ -279,7 +279,7 @@ const ProjectDetail = () => {
                   Usar Productos
                 </button>
                 <button
-                  className="btn btn-sm btn-outline-success my-2"
+                  className="btn btn-success me-2"
                   onClick={() => {
                     const data = sp.productos.map(p => ({
                       Producto: p.nombre,
