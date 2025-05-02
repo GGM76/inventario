@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import ProductList from '../components/ProductList';
 import { fetchProductTotalQuantity, fetchProducts, deleteProduct, setProducts } from '../redux/reducers/productSlice';
 import BodegaFormModal from '../components/BodegaFormModal';
+import * as XLSX from 'xlsx';
 import Swal from 'sweetalert2';
 import '../styles/DashboardPage.css';
 
@@ -41,6 +42,32 @@ const Dashboard = () => {
     product.nombre.toLowerCase().includes(searchQuery.toLowerCase())
   ); 
 
+  const handleExportToExcel = () => {
+    if (!products || products.length === 0) {
+      Swal.fire({
+        icon: 'info',
+        title: 'Sin datos',
+        text: 'No hay productos para exportar.'
+      });
+      return;
+    }
+  
+    const exportData = products.map((product) => ({
+      Nombre: product.nombre,
+      Descripción: product.descripcion || '',
+      Categoría: product.categoria || '',
+      Cantidad_Total: product.totalQuantity ?? 0,
+      Código: product.codigo || '',
+      Precio: product.precio || '',
+    }));
+  
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Inventario');
+  
+    XLSX.writeFile(workbook, 'inventario.xlsx');
+  };
+  
   useEffect(() => {
     if (userEmpresaId) {
       dispatch(fetchProducts(userEmpresaId)).then(() => {
@@ -171,6 +198,8 @@ const Dashboard = () => {
           <button className="btn-seed create" onClick={handleAddBodega}>Agregar Bodega</button>
           <button className="btn-seed create" onClick={handleAddProductToBodega}>Poner productos en bodegas</button>
           <button className="btn-seed create" onClick={() => navigate('/mass-product-upload')}>Agregación Masiva</button>
+          <button className="btn-seed export" onClick={handleExportToExcel}>  Descargar Inventario</button>
+
         </div>
       )}
 
