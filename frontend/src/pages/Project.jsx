@@ -159,9 +159,9 @@ const Projects = () => {
               <button onClick={handleAddProject} className="button-seed add">
                 Agregar Proyecto
               </button>
-              <button onClick={handleDeleteAllProjects} className="button-seed delete-all">
+              {/* <button onClick={handleDeleteAllProjects} className="button-seed delete-all">
                 Eliminar Todos los Proyectos
-              </button>
+              </button> */}
               <button onClick={handleDownloadAllHistories} className="button-seed download-all">
                 Descargar Todos los Detalles
               </button>

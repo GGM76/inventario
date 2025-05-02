@@ -54,10 +54,10 @@ const Dashboard = () => {
   
     const exportData = products.map((product) => ({
       Nombre: product.nombre,
-      Descripción: product.descripcion || '',
+      //Descripción: product.descripcion || '',
       Categoría: product.categoria || '',
       Cantidad_Total: product.totalQuantity ?? 0,
-      Código: product.codigo || '',
+      //Código: product.codigo || '',
       Precio: product.precio || '',
     }));
   

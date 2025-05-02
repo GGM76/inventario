@@ -259,7 +259,7 @@ const ProjectDetail = () => {
                 ))}
               </ul>
               {userRole === 'admin' && (
-              <div className="mt-2">
+              <div className="d-flex flex-wrap gap-2 mt-2">
                 <button
                   className="btn btn-success me-2"
                   onClick={() => handleOpenModal(sp, 'add')}
