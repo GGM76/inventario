@@ -190,55 +190,66 @@ const ProjectDetail = () => {
       <h1>Detalles del Proyecto</h1>
       <p><strong>Nombre:</strong> {project.nombre}</p>
       <p><strong>Descripción:</strong> {project.descripcion}</p>
+      {userRole === 'admin' && (
+  <div className="row g-2 mb-3">
+    <div className="col-12 col-sm-auto">
+      <button
+        className="btn btn-success w-100"
+        onClick={() => {
+          const data = project.productos.map(p => ({
+            Producto: p.nombre,
+            Cantidad: p.cantidadTotal
+          }));
+          exportToExcel(data, `Inventario_Proyecto_${project.nombre}`);
+        }}
+            >
+              Descargar Inventario
+            </button>
+          </div>
+          <div className="col-12 col-sm-auto">
+            <button
+              className="btn btn-outline-primary w-100"
+              onClick={() => navigate(`/projects/${id}/add-products`)}
+            >
+              Actualizar Inventario
+            </button>
+          </div>
+          <div className="col-12 col-sm-auto">
+            <button
+              className="btn btn-primary w-100"
+              onClick={() => navigate(`/${id}/add-subproject`)}
+            >
+              Agregar Subproyecto
+            </button>
+          </div>
+          <div className="col-12 col-sm-auto">
+            <button
+              className="btn btn-secondary w-100"
+              onClick={() => handleOpenModal(null, 'use')}
+            >
+              Usar Productos
+            </button>
+          </div>
+          <div className="col-12 col-sm-auto">
+            <button
+              className="btn btn-info w-100"
+              onClick={() => navigate(`/projects/${id}/historial`)}
+            >
+              Detalles de Uso
+            </button>
+          </div>
+          <div className="col-12 col-sm-auto">
+            <button
+              className="btn btn-danger w-100"
+              onClick={handleDeleteProject}
+            >
+              Eliminar Proyecto
+            </button>
+          </div>
+        </div>
+      )}
 
       <h4>Productos del Proyecto:</h4>
-      {userRole === 'admin' && (
-      <div className="d-flex gap-3 mb-3">
-        <button
-          className="btn btn-success me-2"
-          onClick={() => {
-            const data = project.productos.map(p => ({
-              Producto: p.nombre,
-              Cantidad: p.cantidadTotal
-            }));
-            exportToExcel(data, `Inventario_Proyecto_${project.nombre}`);
-          }}
-        >
-          Descargar Inventario
-        </button>
-        <button
-          className="btn btn-outline-primary"
-          onClick={() => navigate(`/projects/${id}/add-products`)}
-        >
-          Actualizar Inventario
-        </button>
-        <button
-          className="btn btn-primary"
-          onClick={() => navigate(`/${id}/add-subproject`)}
-        >
-          Agregar Subproyecto
-        </button>
-        <button
-          className="btn btn-secondary"
-          onClick={() => handleOpenModal(null, 'use')}
-        >
-          Usar Productos
-        </button>
-        <button
-          className="btn btn-info"
-          onClick={() => navigate(`/projects/${id}/historial`)}
-        >
-          Detalles de Uso
-        </button>
-        <button
-          className="btn btn-danger"
-          onClick={handleDeleteProject}
-        >
-          Eliminar Proyecto
-        </button>
-
-      </div>
-    )}
       <ul>
         {project.productos?.map(p => (
           <li key={p.id}>{p.nombre} — {p.cantidadTotal}</li>
