@@ -41,7 +41,7 @@ export const register = (email, password, role, empresa_id) => async (dispatch) 
 
     // Verifica que los datos sean enviados de forma correcta (sin anidar)
     const response = await axios.post(
-      `${API_URL}/register`,
+      `${API_URL}/roomies/register`,
       { email, password, role, empresa_id },  // Cambié 'empresa' por 'empresa_id'
       {
         headers: {
