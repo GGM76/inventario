@@ -86,7 +86,8 @@ const Navbar = () => {
       </div>
 
       <div className="navbar-right">
-        <button className="custom-btn" onClick={handleLogout}>Cerrar sesión</button>
+      <button className="logout-btn" onClick={handleLogout}>Cerrar sesión</button>
+
       </div>
 
       {/* Modal solo en móvil */}

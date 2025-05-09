@@ -180,13 +180,21 @@ const Dashboard = () => {
     navigate('/projects');  // Redirige a la página de proyectos
   };
 
+  const empresaLogos = {
+    Seedgroup: '/images/seed-logo.png',
+    Mutis: '/images/mutis-logo.jfif',
+    Pico: '/images/pico-logo.png',
+    Incedo: '/images/incedo-logo.jpg'
+    
+  };
+  
+  const logoSrc = empresaLogos[userEmpresaId] || '/images/default-logo.png';
+
   return (
     <div className={`dashboard ${theme}`}>
-      {isSeedgroup && (
         <div className="dashboard-header">
-          <img src="/images/seed-logo.png" alt="Seedgroup Logo" className="seed-logo" />
-        </div>
-      )}
+        <img src={logoSrc} alt="Logo Empresa" className="company-logo" />
+      </div>
       
       <h1>Inventario</h1>
 
