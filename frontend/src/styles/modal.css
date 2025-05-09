@@ -1,0 +1,55 @@
+/* Base del modal con tema */
+.theme-modal .modal-content {
+    background-color: var(--background-color);
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+    border-radius: 8px;
+  }
+  
+  /* Cabecera del modal */
+  .theme-modal .modal-header {
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+    border-bottom: none;
+  }
+  
+  /* Botón de cierre */
+  .theme-modal .btn-close {
+    filter: invert(1);
+  }
+  
+  /* Footer del modal */
+  .theme-modal .modal-footer {
+    border-top: none;
+  }
+  
+  /* Estilo de input reutilizado */
+  .theme-modal .form-control {
+    border: 2px solid var(--primary-color);
+    border-radius: 6px;
+    padding: 8px 12px;
+    color: var(--primary-color);
+  }
+  
+  .theme-modal .form-control:focus {
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 4px rgba(198, 255, 0, 0.3); /* para Seedgroup */
+  }
+  
+  /* Botones del modal */
+  .theme-modal .btn-primary {
+    background-color: var(--primary-color);
+    border: none;
+    color: var(--secondary-color);
+  }
+  
+  .theme-modal .btn-primary:hover {
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+  }
+  
+  .theme-modal .btn-secondary {
+    background-color: #ccc;
+    color: #000;
+  }
+  

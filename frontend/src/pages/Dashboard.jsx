@@ -23,7 +23,7 @@ const Dashboard = () => {
   const userEmpresaId = localStorage.getItem('userEmpresaId');
   const isSeedgroup = userEmpresaId === 'Seedgroup';
   const theme = isSeedgroup ? 'seedgroup' : 'default';
-  const [showBodegaModal, setShowBodegaModal] = useState(false);
+  const [showBodegaModal, setShowBodegaModal] = useState(false);  
 
   // Función para verificar si el usuario es admin
   const checkAdminPermission = () => {
@@ -192,11 +192,11 @@ const Dashboard = () => {
 
       {userRole === 'admin' && (
         <div className="dashboard-buttons">
-          <button className="btn-seed create" onClick={handleAddProduct}>Agregar Producto</button>
-          <button className="btn-seed create" onClick={handleAddBodega}>Agregar Bodega</button>
-          <button className="btn-seed create" onClick={handleAddProductToBodega}>Poner productos en bodegas</button>
-          <button className="btn-seed create" onClick={() => navigate('/mass-product-upload')}>Agregación Masiva</button>
-          <button className="btn-seed export" onClick={handleExportToExcel}>  Descargar Inventario</button>
+          <button className="custom-btn add-btn" onClick={handleAddProduct}>Agregar Producto</button>
+          <button className="custom-btn add-btn" onClick={handleAddBodega}>Agregar Bodega</button>
+          <button className="custom-btn add-btn" onClick={handleAddProductToBodega}>Poner productos en bodegas</button>
+          <button className="custom-btn add-btn" onClick={() => navigate('/mass-product-upload')}>Agregación Masiva</button>
+          <button className="custom-btn" onClick={handleExportToExcel}>  Descargar Inventario</button>
 
         </div>
       )}

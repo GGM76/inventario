@@ -145,10 +145,10 @@ const MassProductUpload = () => {
 
       {bodegas.length > 0 && (
         <div className="mb-3 d-flex gap-2">
-        <button className="btn btn-info" onClick={descargarTxtBodegas}>
+        <button className="custom-btn" onClick={descargarTxtBodegas}>
           Descargar IDs de Bodegas
         </button>
-        <button className="btn btn-secondary" onClick={descargarPlantillaExcel}>
+        <button className="custom-btn project-btn" onClick={descargarPlantillaExcel}>
           Descargar Plantilla Excel
         </button>
       </div>      
@@ -174,7 +174,7 @@ const MassProductUpload = () => {
             </tbody>
           </table>
 
-          <button className="btn btn-success" onClick={handleUpload}>
+          <button className="custom-btn add-btn" onClick={handleUpload}>
             Subir al sistema
           </button>
         </>

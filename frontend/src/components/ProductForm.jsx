@@ -1,7 +1,11 @@
+//src/components/ProductForm.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import '../styles/ProductForm.css';
+import '../styles/buttons.css';
+import '../styles/inputs.css';
+
 
 const ProductForm = ({ onSave, empresaId }) => {
   const navigate = useNavigate();
@@ -46,7 +50,7 @@ const ProductForm = ({ onSave, empresaId }) => {
   return (
     <form onSubmit={handleSubmit}>
       <div>
-        <label>Clave:</label>
+        <label className="custom-label">Clave:</label>
         <input 
           type="text" 
           value={clave} 
@@ -55,7 +59,7 @@ const ProductForm = ({ onSave, empresaId }) => {
         />
       </div>
       <div>
-        <label>Categoría:</label>
+        <label className="custom-label">Categoría:</label>
         <input 
           type="text" 
           value={categoria} 
@@ -64,7 +68,7 @@ const ProductForm = ({ onSave, empresaId }) => {
         />
       </div>
       <div>
-        <label>Nombre:</label>
+        <label className="custom-label">Nombre:</label>
         <input 
           type="text" 
           value={nombre} 
@@ -73,7 +77,7 @@ const ProductForm = ({ onSave, empresaId }) => {
         />
       </div>
       <div>
-        <label>Precio:</label>
+        <label className="custom-label">Precio:</label>
         <input 
           type="number" 
           value={precio} 
@@ -85,19 +89,11 @@ const ProductForm = ({ onSave, empresaId }) => {
       {/* Contenedor de los botones */}
       <div className="button-container">
         {/* Botón de guardar */}
-        <button 
-          type="submit"
-          className="btn btn-primary"
-        >
+        <button type="submit" className="custom-btn add-btn">
           Guardar
         </button>
-
         {/* Botón de cancelar */}
-        <button
-          type="button" // No debe ser de tipo submit
-          onClick={handleCancel}
-          className="btn btn-secondary"
-        >
+        <button type="button" onClick={handleCancel} className="custom-btn cancel-btn">
           Cancelar
         </button>
       </div>

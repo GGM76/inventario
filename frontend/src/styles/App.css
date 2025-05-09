@@ -1,5 +1,8 @@
+/* src/styles/App.css */
 .App {
   text-align: center;
+  background-color: var(--background-color);
+  color: var(--primary-color);
 }
 
 .App-logo {
@@ -14,18 +17,18 @@
 }
 
 .App-header {
-  background-color: #282c34;
+  background-color: var(--primary-color);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
-  color: white;
+  color: var(--secondary-color);
 }
 
 .App-link {
-  color: #61dafb;
+  color: var(--primary-color);
 }
 
 @keyframes App-logo-spin {
@@ -35,4 +38,39 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+/* === THEME VARIABLES === */
+:root {
+  --primary-color: #333;
+  --secondary-color: #555;
+  --background-color: #fff;
+}
+
+/* Incedo: Azul oscuro y blanco */
+.theme-Incedo {
+  --primary-color: #FF6F00;
+  --secondary-color: #333333;
+  --background-color: #FFFFFF;
+}
+
+/* SeedGroup: Verde limón y amarillo limón */
+.theme-Seedgroup {
+  --primary-color: #006b40; /* Verde limón */
+  --secondary-color: #dd9903; /* Amarillo limón */
+  --background-color: #f5f5f5;
+}
+
+/* Mutis: Rosa y amarillo vibrantes */
+.theme-Mutis {
+  --primary-color: #FF4081;
+  --secondary-color: #FFEB3B;
+  --background-color: #f4f4f4;
+}
+
+/* Pico: Colores pastel */
+.theme-Pico {
+  --primary-color: #FFCDD2;
+  --secondary-color: #FFEBEE;
+  --background-color: #ffffff;
 }

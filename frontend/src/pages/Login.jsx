@@ -41,6 +41,7 @@ const LoginPage = () => {
             localStorage.setItem('userEmail', user.email);
 
             navigate('/dashboard');
+            window.location.reload();
         } catch (error) {
             console.error('Error de login:', error.message);
             setError(error.message);

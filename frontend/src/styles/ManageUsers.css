@@ -11,10 +11,9 @@
     text-align: center;
     font-size: 2rem;
     margin-bottom: 30px;
-    color: #2e7d32;
+    color: var(--primary-color);
     font-weight: bold;
-  }
-  
+  }  
   /* Tabla estilo desktop */
   .user-table {
     width: 100%;

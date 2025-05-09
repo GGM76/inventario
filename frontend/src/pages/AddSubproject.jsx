@@ -194,19 +194,13 @@ const AddSubproject = () => {
             })}
           </div>
         )}
-
-        <button type="submit" className="btn btn-success" disabled={loading}>
+        <button type="submit" className="custom-btn add-btn" disabled={loading}>
           {loading ? 'Cargando...' : 'Agregar Subproyecto'}
         </button>
-
-        <button
-          type="button"
-          className="btn btn-secondary ms-2"
-          onClick={() => navigate(`/projects/${projectId}`)}
-        >
+        <button type="button" className="custom-btn add-btn ms-2" 
+        onClick={() => navigate(`/projects/${projectId}`)}>
           Cancelar
         </button>
-
       </form>
     </div>
   );

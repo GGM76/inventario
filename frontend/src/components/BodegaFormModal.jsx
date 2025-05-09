@@ -1,5 +1,6 @@
 // src/components/BodegaFormModal.jsx
 import React, { useState } from 'react';
+import '../styles/modal.css';
 
 const BodegaFormModal = ({ onClose, onSuccess }) => {
   const [nombre, setNombre] = useState('');
@@ -51,7 +52,7 @@ const BodegaFormModal = ({ onClose, onSuccess }) => {
   };
 
   return (
-    <div className="modal show d-block" tabIndex="-1">
+    <div className="modal show d-block theme-modal" tabIndex="-1">
       <div className="modal-dialog">
         <div className="modal-content">
           <form onSubmit={handleSubmit}>
@@ -85,8 +86,8 @@ const BodegaFormModal = ({ onClose, onSuccess }) => {
               </div>
             </div>
             <div className="modal-footer">
-              <button type="button" className="btn btn-secondary" onClick={onClose}>Cancelar</button>
-              <button type="submit" className="btn btn-primary" disabled={loading}>
+              <button type="button" className="custom-btn cancel-btn" onClick={onClose}>Cancelar</button>
+              <button type="submit" className="custom-btn add-btn" disabled={loading}>
                 {loading ? 'Cargando...' : 'Agregar Bodega'}
               </button>
             </div>

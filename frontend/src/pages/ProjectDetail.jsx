@@ -194,7 +194,7 @@ const ProjectDetail = () => {
   <div className="row g-2 mb-3">
     <div className="col-12 col-sm-auto">
       <button
-        className="btn btn-success w-100"
+        className="custom-btn cancel-btn w-100"
         onClick={() => {
           const data = project.productos.map(p => ({
             Producto: p.nombre,
@@ -208,7 +208,7 @@ const ProjectDetail = () => {
           </div>
           <div className="col-12 col-sm-auto">
             <button
-              className="btn btn-outline-primary w-100"
+              className="custom-btn project-btn w-100"
               onClick={() => navigate(`/projects/${id}/add-products`)}
             >
               Actualizar Inventario
@@ -216,7 +216,7 @@ const ProjectDetail = () => {
           </div>
           <div className="col-12 col-sm-auto">
             <button
-              className="btn btn-primary w-100"
+              className="custom-btn add-btn w-100"
               onClick={() => navigate(`/${id}/add-subproject`)}
             >
               Agregar Subproyecto
@@ -224,7 +224,7 @@ const ProjectDetail = () => {
           </div>
           <div className="col-12 col-sm-auto">
             <button
-              className="btn btn-secondary w-100"
+              className="custom-btn cancel-btn w-100"
               onClick={() => handleOpenModal(null, 'use')}
             >
               Usar Productos
@@ -232,7 +232,7 @@ const ProjectDetail = () => {
           </div>
           <div className="col-12 col-sm-auto">
             <button
-              className="btn btn-info w-100"
+              className="custom-btn dashboard-btn w-100"
               onClick={() => navigate(`/projects/${id}/historial`)}
             >
               Detalles de Uso
@@ -240,7 +240,7 @@ const ProjectDetail = () => {
           </div>
           <div className="col-12 col-sm-auto">
             <button
-              className="btn btn-danger w-100"
+              className="custom-btn delete-btn w-100"
               onClick={handleDeleteProject}
             >
               Eliminar Proyecto
@@ -272,25 +272,25 @@ const ProjectDetail = () => {
               {userRole === 'admin' && (
               <div className="d-flex flex-wrap gap-2 mt-2">
                 <button
-                  className="btn btn-success me-2"
+                  className="custom-btn add-btn me-2"
                   onClick={() => handleOpenModal(sp, 'add')}
                 >
                   Agregar Productos
                 </button>
                 <button
-                  className="btn btn-warning me-2"
+                  className="custom-btn me-2"
                   onClick={() => handleOpenModal(sp, 'return')}
                 >
                   Devolver Productos
                 </button>
                 <button
-                  className="btn btn-secondary"
+                  className="custom-btn cancel-btn"
                   onClick={() => handleOpenModal(sp, 'use')}
                 >
                   Usar Productos
                 </button>
                 <button
-                  className="btn btn-success me-2"
+                  className="custom-btn dashboard-btn me-2"
                   onClick={() => {
                     const data = sp.productos.map(p => ({
                       Producto: p.nombre,

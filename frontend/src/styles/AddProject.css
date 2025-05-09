@@ -49,8 +49,8 @@
     display: inline-flex;
     margin: 5px;
     padding: 5px 10px;
-    background-color: #007bff;
-    color: white;
+    background-color: var(--background-color);
+    color: var(--primary-color);
     border-radius: 20px;
     font-size: 14px;
     margin-right: 8px;
@@ -64,14 +64,14 @@
   .react-select__multi-value__remove {
     cursor: pointer;
     padding-left: 5px;
-    color: #fff;
+    color: var(--secondary-color);
     font-size: 18px;
   }
 
   .producto-titulo {
   font-size: 1.3rem; /* Más grande */
   font-weight: bold;
-  color: #17a2b8; /* Azul verdoso */
+  color: var(--primary-color);
   margin-top: 20px;
   display: block;
 }

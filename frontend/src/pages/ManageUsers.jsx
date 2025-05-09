@@ -4,6 +4,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { fetchUsers, updateUserRole } from '../redux/reducers/userSlice'; // Acción para obtener usuarios y actualizar roles
 import '../styles/ManageUsers.css';
+import '../styles/buttons.css';
+import '../styles/inputs.css';
 
 const ManageUsers = () => {
   const dispatch = useDispatch();
@@ -70,10 +72,11 @@ const ManageUsers = () => {
                 <tr key={user.id}>
                   <td>{user.email}</td>
                   <td>
-                    <select
-                      value={roles[user.id] || user.role}
-                      onChange={(e) => handleRoleChange(user.id, e.target.value)}
-                    >
+                  <select
+                    value={roles[user.id] || user.role}
+                    onChange={(e) => handleRoleChange(user.id, e.target.value)}
+                    className="form-control"
+                  >
                       <option value="usuario">Usuario</option>
                       <option value="admin">Admin</option>
                     </select>
@@ -99,7 +102,7 @@ const ManageUsers = () => {
               </div>
             ))}
           </div>
-          <button onClick={handleSave} style={{ marginTop: '20px' }}>
+          <button onClick={handleSave} className="custom-btn add-btn">
             Salvar
           </button>
         </div>

@@ -85,7 +85,7 @@ const UseHistory = () => {
     <div className="container mt-4">
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h1>Historial de Uso de Productos</h1>
-        <button className="btn btn-success" onClick={handleExport}>Descargar</button>
+        <button className="custom-btn add-btn" onClick={handleExport}>Descargar</button>
       </div>
 
       <table className="table">

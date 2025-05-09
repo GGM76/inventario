@@ -20,23 +20,15 @@ const ProductItem = ({ product, handleDelete, userRole }) => {
       <p>Precio: ${product.precio}</p>
 
       <div className="button-group">
-  {userRole === 'admin' && (
-    <button
-      onClick={() => handleDelete(product.id)}
-      className="btn-seed delete"
-    >
-      Eliminar
-    </button>
-  )}
-  <button
-    onClick={handleClick}
-    className="btn-seed details"
-  >
-    Detalles
-  </button>
-</div>
-
-
+      {userRole === 'admin' && (
+        <button onClick={() => handleDelete(product.id)} className="custom-btn delete-btn">
+          Eliminar
+        </button>
+      )}
+      <button onClick={handleClick} className="custom-btn add-btn">
+        Detalles
+      </button>
+      </div>
     </div>
   );
 };

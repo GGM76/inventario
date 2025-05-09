@@ -1,31 +1,31 @@
+/* src/styles/AddProdctPage.css*/
 /* Estilo general de la página */
 .add-product-page {
-    padding: 40px 20px;
-    max-width: 800px;
-    margin: 0 auto;
-    background-color: #f4f4f4;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 40px 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  background-color: var(--background-color);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Título */
+.add-product-page h1 {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 30px;
+  color: var(--primary-color);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .add-product-page {
+    padding: 20px 15px;
   }
-  
-  /* Título */
+
   .add-product-page h1 {
-    text-align: center;
-    font-size: 2rem;
-    font-weight: bold;
-    margin-bottom: 30px;
-    color: #2e7d32; /* Verde oscuro */
+    font-size: 1.5rem;
   }
-  
-  /* Responsive */
-  @media (max-width: 768px) {
-    .add-product-page {
-      padding: 20px 15px;
-    }
-  
-    .add-product-page h1 {
-      font-size: 1.5rem;
-    }
-  }
-  
+}

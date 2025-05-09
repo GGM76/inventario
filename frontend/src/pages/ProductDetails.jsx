@@ -143,11 +143,11 @@ const ProductDetails = () => {
         {userRole === 'admin' && (
           isEditable ? (
             <>
-              <button onClick={handleGuardarCambios} className="button-seed button-save">Guardar Cambios</button>
-              <button onClick={handleCancelarCambios} className="button-seed button-cancel">Cancelar Cambios</button>
+              <button onClick={handleGuardarCambios} className="custom-btn add-btn">Guardar Cambios</button>
+              <button onClick={handleCancelarCambios} className="custom-btn cancel-btn">Cancelar Cambios</button>
             </>
           ) : (
-            <button onClick={handleEnableEdit} className="button-seed button-edit">Actualizar</button>
+            <button onClick={handleEnableEdit} className="custom-btn project-btn">Actualizar</button>
           )
         )}
       </div>

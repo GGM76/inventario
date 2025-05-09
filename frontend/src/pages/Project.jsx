@@ -7,6 +7,9 @@ import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import Swal from 'sweetalert2';  // Importa SweetAlert2
 import '../styles/Projects.css';
+import '../styles/buttons.css';
+import '../styles/inputs.css';
+
 
 const Projects = () => {
   const dispatch = useDispatch();
@@ -156,20 +159,20 @@ const Projects = () => {
       <div className="projects-actions">
           {userRole === 'admin' && (
             <div className="action-left">
-              <button onClick={handleAddProject} className="button-seed add">
+              <button onClick={handleAddProject} className="custom-btn add-btn">
                 Agregar Proyecto
               </button>
               {/* <button onClick={handleDeleteAllProjects} className="button-seed delete-all">
                 Eliminar Todos los Proyectos
               </button> */}
-              <button onClick={handleDownloadAllHistories} className="button-seed download-all">
+              <button onClick={handleDownloadAllHistories} className="custom-btn">
                 Descargar Todos los Detalles
               </button>
             </div>
           )}
           {/* Mover el botón 'Volver al Inventario' dentro de esta sección */}
           <div className="action-right">
-            <button onClick={handleGoToDashboard} className="button-seed dashboard">
+            <button onClick={handleGoToDashboard} className="custom-btn dashboard-btn">
               Volver al Inventario
             </button>
           </div>
@@ -190,7 +193,7 @@ const Projects = () => {
                 <li key={project.id}>
                   <button
                     onClick={() => handleProjectClick(project.id)}
-                    className="button-seed project"
+                    className="custom-btn project-btn"
                   >
                     {project.nombre}
                   </button>

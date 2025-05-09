@@ -81,7 +81,7 @@ const BodegaForm = ({ products }) => {
             required
           />
         </div>
-        <button type="submit">Agregar Bodega</button>
+        <button className="custom-btn add-btn" type="submit">Agregar Bodega</button>
       </form>
     </div>
   );

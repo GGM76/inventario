@@ -276,15 +276,10 @@ const AddProject = () => {
           </div>
         )}
 
-        <button type="submit" className="btn btn-success">
+        <button type="submit" className="custom-btn add-btn">
           {editProjectId ? 'Guardar productos en el proyecto' : 'Crear proyecto'}
         </button>
-
-        <button
-          type="button"
-          className="btn btn-secondary ms-2"
-          onClick={() => navigate('/projects')}
-        >
+        <button type="button" className="custom-btn cancel-btn ms-2" onClick={() => navigate('/projects')}>
           Cancelar
         </button>
       </form>
@@ -301,7 +296,7 @@ const AddProject = () => {
               La cantidad seleccionada excede el inventario disponible en la bodega.
             </div>
             <div className="modal-footer">
-              <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Entendido</button>
+              <button type="button" className="custom-btn" data-bs-dismiss="modal">Entendido</button>
             </div>
           </div>
         </div>

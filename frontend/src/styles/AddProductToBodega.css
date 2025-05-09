@@ -1,0 +1,72 @@
+/* Contenedor general */
+.add-product-to-bodega-page {
+    padding: 40px 20px;
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: var(--background-color);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  /* Título */
+  .add-product-to-bodega-page h1 {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 30px;
+    color: var(--primary-color);
+  }
+  
+  /* Etiquetas e inputs */
+  .add-product-to-bodega-page label {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--primary-color);
+    font-weight: 600;
+  }
+  
+  .add-product-to-bodega-page .form-control {
+    width: 100%;
+    padding: 10px 14px;
+    margin-bottom: 20px;
+    border: 2px solid var(--primary-color);
+    border-radius: 6px;
+    background-color: #fff;
+    color: var(--primary-color);
+    font-size: 1rem;
+  }
+  
+  .add-product-to-bodega-page .form-control:focus {
+    border-color: var(--secondary-color);
+    outline: none;
+    box-shadow: 0 0 5px rgba(198, 255, 0, 0.3);
+  }
+  
+  /* Botones */
+  .button-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+  
+  .button-container .btn-primary {
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  .button-container .btn-secondary {
+    background-color: #ccc;
+    color: #000;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  

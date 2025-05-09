@@ -2,7 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
-
+import '../styles/AddProductToBodega.css';
+import '../styles/inputs.css';
+import '../styles/buttons.css';
 
 const AddProductToBodega = () => {
   const navigate = useNavigate();
@@ -121,7 +123,7 @@ const AddProductToBodega = () => {
   };
 
   return (
-    <div>
+    <div className="add-product-to-bodega-page">
       <h1>Agregar Producto a Bodega</h1>
       <form onSubmit={handleSubmit}>
         <div>
@@ -177,23 +179,11 @@ const AddProductToBodega = () => {
           />
         </div>
 
-        {/* Contenedor de los botones */}
         <div className="button-container" style={{ marginTop: '20px' }}>
-          {/* Botón de agregar producto */}
-          <button 
-            type="submit" 
-            className="btn btn-primary" 
-            style={{ marginRight: '10px' }}
-          >
+          <button type="submit" className="custom-btn add-btn" style={{ marginRight: '10px' }}>
             Agregar Producto a Bodega
           </button>
-
-          {/* Botón de cancelar */}
-          <button
-            type="button"  // No debe ser tipo submit
-            onClick={handleCancel}
-            className="btn btn-secondary"
-          >
+          <button type="button" onClick={handleCancel} className="custom-btn cancel-btn">
             Cancelar
           </button>
         </div>

@@ -9,11 +9,10 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #333;
 }
-
 /* Título */
 .projects-container h1 {
   text-align: center;
-  color: #2e7d32;
+  color: var(--primary-color);
   font-size: 2rem;
   margin-bottom: 25px;
 }
