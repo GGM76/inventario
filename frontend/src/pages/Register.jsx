@@ -54,7 +54,7 @@ const RegisterPage = () => {
       })
       .catch((err) => {
         console.error('Register error', err);
-        toast.error(err.response?.data?.message || 'Error al registrarse.');
+        toast.error(err.response?.data?.message || 'Error al registrarse o ya esta registrado.');
       })
       .finally(() => setIsLoading(false));
   };

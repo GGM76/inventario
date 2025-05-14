@@ -51,13 +51,14 @@ export const register = (email, password, role, empresa_id) => async (dispatch) 
     );
 
     dispatch({ type: 'REGISTER_SUCCESS' });
-
+    return response.data;
   } catch (error) {
-    console.error('Error al registrar:', error.response ? error.response.data : error.message);
+    const errorMessage = error.response?.data?.message || error.message;
     dispatch({
       type: 'REGISTER_FAIL',
       payload: error.response ? error.response.data.message : error.message,
     });
+    throw new Error(errorMessage);
   }
 };
 

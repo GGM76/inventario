@@ -1,7 +1,7 @@
 //controllers/authContoller.js
 const { admin, db } = require('../config/firebase'); // Asegúrate de tener acceso a Firestore también
 
-const registerUser = async (req, res) => {
+const registerUser = async (req, res) => { 
     const { email, password, role, empresa_id } = req.body;
     try {
         // Crear usuario en Firebase Authentication
@@ -22,7 +22,12 @@ const registerUser = async (req, res) => {
             uid: user.uid,
         });
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        // Verifica si es un error por email ya registrado
+        if (error.code === 'auth/email-already-exists') {
+            return res.status(400).json({ message: 'El correo ya está registrado.' });
+        }
+        // Otros errores
+        res.status(400).json({ message: error.message });
     }
 };
 
