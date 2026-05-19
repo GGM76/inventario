@@ -108,7 +108,7 @@ const ProductDetails = () => {
         {product.bodegas.length > 0 ? (
           <ul>
             {product.bodegas.map((bodega) => (
-              <li key={bodega.id}>
+              <li key={bodega.id || bodega.bodegaId}>
                 {bodega.nombre} - Ubicación: {bodega.ubicacion} - 
                 {/* Modo de edición */}
                 {isEditable ? (
@@ -121,7 +121,7 @@ const ProductDetails = () => {
                       setProduct(prev => ({
                         ...prev,
                         bodegas: prev.bodegas.map(b =>
-                          b.id === bodega.id ? { ...b, cantidad: nuevaCantidad } : b
+                            (b.id === bodega.id || b.bodegaId === bodega.bodegaId) ? { ...b, cantidad: nuevaCantidad } : b
                         ),
                       }));
                     }}

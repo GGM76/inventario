@@ -39,6 +39,7 @@ const LoginPage = () => {
             localStorage.setItem('userRole', role);
             localStorage.setItem('userEmpresaId', empresa_id);
             localStorage.setItem('userEmail', user.email);
+            localStorage.setItem('lastActivity', Date.now().toString());
 
             navigate('/dashboard');
             window.location.reload();

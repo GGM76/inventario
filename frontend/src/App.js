@@ -15,7 +15,9 @@ import AddSubproject from './pages/AddSubproject';
 import Navbar from './components/Navbar';
 import AdminRoute from './components/AdminRoute';
 import MassProductUpload from './pages/MassProductUpload';
+import ProjectMassUpload from './pages/ProjectMassUpload';
 import UseHistory from './pages/UseHistory';
+import useAutoLogout from './hooks/useAutoLogout';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
 import './styles/App.css';
@@ -23,6 +25,9 @@ import './styles/App.css';
 function App() {
   const location = useLocation();
   const empresa = localStorage.getItem('userEmpresaId') || 'default';
+
+  useAutoLogout();
+
   //Aplica el tema 
   useEffect(() => {
     document.body.className = '';
@@ -58,6 +63,7 @@ function App() {
         <Route path="/manage-users" element={<AdminRoute><ManageUsers /></AdminRoute>} />
         <Route path="/projects/:projectId/add-products" element={<AdminRoute><AddProject /></AdminRoute>} />
         <Route path="/projects/:id/historial" element={<AdminRoute><UseHistory /></AdminRoute>} />
+        <Route path="/projects/:projectId/mass-use" element={<AdminRoute><ProjectMassUpload /></AdminRoute>} />
         <Route path="/mass-product-upload" element={<AdminRoute><MassProductUpload /></AdminRoute>} />
       </Routes>
     </>

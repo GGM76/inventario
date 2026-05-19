@@ -4,6 +4,51 @@ const { admin } = require('../config/firebase');
 const registerInventoryLog  = require('../services/registerInventoryLog');
 const registrarMovimientoInventario = require('../services/registerInventoryLog');
 
+const buildProductBodegas = async (productoId, empresa_id) => {
+  let inventarioQuery = db.collection('inventario').where('producto_id', '==', productoId);
+  if (empresa_id) {
+    inventarioQuery = inventarioQuery.where('empresa_id', '==', empresa_id);
+  }
+
+  const inventarioSnapshot = await inventarioQuery.get();
+  const bodegaMap = {};
+
+  inventarioSnapshot.forEach((invDoc) => {
+    const invData = invDoc.data();
+    const bodegaId = invData.bodega_id;
+    const cantidad = Number(invData.cantidad);
+
+    if (!bodegaId || isNaN(cantidad) || cantidad <= 0) return;
+
+    if (!bodegaMap[bodegaId]) {
+      bodegaMap[bodegaId] = 0;
+    }
+
+    bodegaMap[bodegaId] += cantidad;
+  });
+
+  const bodegaIds = Object.keys(bodegaMap);
+  if (bodegaIds.length === 0) return [];
+
+  const bodegas = [];
+  for (const bodegaId of bodegaIds) {
+    const bodegaDoc = await db.collection('bodegas').doc(bodegaId).get();
+    const bodegaData = bodegaDoc.exists ? bodegaDoc.data() : {};
+
+    bodegas.push({
+      id: bodegaId,
+      bodegaId,
+      nombre: bodegaData.nombre || bodegaData.bodegaNombre || '',
+      bodegaNombre: bodegaData.nombre || bodegaData.bodegaNombre || '',
+      ubicacion: bodegaData.ubicacion || '',
+      cantidad: bodegaMap[bodegaId],
+      cantidadDisponible: bodegaMap[bodegaId],
+    });
+  }
+
+  return bodegas;
+};
+
 // Obtener productos por empresa
 const getProducts = async (req, res) => {
   const empresa_id = req.query.empresa_id;  // Obtener 'empresa_id' desde los parámetros de consulta
@@ -21,24 +66,12 @@ const getProducts = async (req, res) => {
       return res.status(404).json({ error: 'No se encontraron productos para esta empresa.' });
     }
 
-    // Mapeamos los productos y agregamos las bodegas correspondientes
+    // Mapeamos los productos y agregamos las bodegas correspondientes desde inventario
     const products = await Promise.all(
       productsSnapshot.docs.map(async (doc) => {
         const productData = doc.data();
-
-        // Consultamos las bodegas asociadas al producto
-        const bodegasSnapshot = await admin.firestore()
-          .collection('bodegas')  // Accedemos a la colección "bodegas"
-          .where('producto_id', '==', doc.id)  // Filtramos por el ID del producto
-          .get();
-
-        const bodegas = bodegasSnapshot.docs.map(bodegaDoc => ({
-          id: bodegaDoc.id,
-          ...bodegaDoc.data()
-        }));
-
-        const totalQuantity = bodegas.reduce((acc, bodega) => acc + bodega.cantidad, 0);
-
+        const bodegas = await buildProductBodegas(doc.id, empresa_id);
+        const totalQuantity = bodegas.reduce((acc, item) => acc + item.cantidad, 0);
         return { id: doc.id, ...productData, bodegas, totalQuantity };
       })
     );
@@ -114,54 +147,11 @@ const getProductDetails = async (req, res) => {
     }
 
     const productData = productDoc.data();
-
-    // Consultamos el inventario para obtener las bodegas asociadas al producto
-    const inventarioSnapshot = await db.collection('inventario')
-      .where('producto_id', '==', id)  // Filtramos por el ID del producto
-      .get();
-
-    // Si no se encuentran registros en inventario, retornamos un error
-    if (inventarioSnapshot.empty) {
-      return res.status(404).json({ error: 'No se encontraron bodegas para este producto' });
-    }
-
-    // Obtenemos los IDs de las bodegas desde el inventario
-    const bodegaIds = inventarioSnapshot.docs.map(doc => doc.data().bodega_id);
-
-    // Verificamos si estamos haciendo la consulta correctamente con los IDs de las bodegas
-    if (bodegaIds.length === 0) {
-      return res.status(404).json({ error: 'No se encontraron bodegas asociadas al producto' });
-    }
-
-    // Ahora buscamos los detalles de cada bodega usando esos IDs
-    const bodegasSnapshot = await db.collection('bodegas')
-      .where('__name__', 'in', bodegaIds)  // Usamos '__name__' para buscar por el ID del documento
-      .get();
-
-    // Verificamos los resultados de la consulta a bodegas
-    if (bodegasSnapshot.empty) {
-      return res.status(404).json({ error: 'No se encontraron detalles de las bodegas.' });
-    }
-
-    // Creamos el arreglo de bodegas con los detalles de cada bodega
-    const bodegas = bodegasSnapshot.docs.map(bodegaDoc => {
-    const bodegaData = bodegaDoc.data();
-
-    const cantidad = parseInt(inventarioSnapshot.docs
-      .filter(doc => doc.data().bodega_id === bodegaDoc.id)  // Filtramos las cantidades de este bodega_id
-      .reduce((acc, doc) => acc + doc.data().cantidad, 0));  // Sumamos las cantidades
-  
-      
-      return {
-        id: bodegaDoc.id,  // El ID del documento de la bodega
-        nombre: bodegaData.nombre,  // Nombre de la bodega
-        ubicacion: bodegaData.ubicacion,  // Ubicación de la bodega
-        cantidad: cantidad,
-      };
-    });
+    const empresaId = productData.empresa_id || req.query.empresa_id;
+    const bodegas = await buildProductBodegas(id, empresaId);
 
     // Devolvemos el producto con las bodegas asociadas
-    res.json({ id: productDoc.id, ...productData, bodegas });
+    return res.json({ id: productDoc.id, ...productData, bodegas });
 
   } catch (error) {
     console.error('Error al obtener los detalles del producto:', error);
@@ -188,11 +178,13 @@ const getProductTotalQuantity = async (req, res) => {
       const cantidad = doc.data().cantidad;
       
       // Verificar si la cantidad es válida antes de sumarla
-      if (cantidad && !isNaN(cantidad)) {
+      if (cantidad !== null && cantidad !== undefined && !isNaN(cantidad) && cantidad >= 0) {
         totalQuantity += parseInt(cantidad, 10);  // Asegurarse de que la cantidad sea un número
-      } else {
+      } else if (cantidad !== 0) {
+        // Solo mostrar warning para valores realmente inválidos, no para 0
         console.warn(`Cantidad inválida en el inventario del producto ${productoId}:`, cantidad);
       }
+      // Si cantidad es 0, simplemente no se suma (es válido, significa sin stock)
     });
 
     // Devuelve el total calculado
@@ -208,47 +200,8 @@ const getProductInventory = async (req, res) => {
   const { productoId, empresa_id } = req.query;
 
   try {
-    // Obtenemos los inventarios para el producto en la empresa
-    const inventarioRef = db.collection('inventario');
-    const inventarioSnapshot = await inventarioRef
-      .where('producto_id', '==', productoId)
-      .where('empresa_id', '==', empresa_id)
-      .get();
-
-    // Crear una lista de IDs de bodegas
-    const bodegaIds = [];
-    inventarioSnapshot.forEach(doc => {
-      const data = doc.data();
-      bodegaIds.push(data.bodega_id); // Aquí 'bodega_id' es lo correcto para el inventario
-    });
-
-    // Crear un mapa de bodegaId a nombre de la bodega
-    const bodegasMap = {};
-    for (const bodegaId of bodegaIds) {
-      const bodegaRef = db.collection('bodegas').doc(bodegaId);
-      const bodegaDoc = await bodegaRef.get();
-      
-      if (bodegaDoc.exists) {
-        const data = bodegaDoc.data();
-        bodegasMap[bodegaId] = data.nombre;  // Asumimos que el campo es 'nombre'
-      } else {
-        bodegasMap[bodegaId] = 'Nombre no disponible';
-      }
-    }
-
-    // Ahora, combinamos el inventario con el nombre de la bodega
-    const bodegaInventarios = [];
-    inventarioSnapshot.forEach(doc => {
-      const data = doc.data();
-      const bodegaNombre = bodegasMap[data.bodega_id] || 'Nombre no disponible';  // Verifica que 'bodega_id' sea el correcto
-      bodegaInventarios.push({
-        bodegaId: data.bodega_id,
-        cantidadDisponible: data.cantidad,
-        bodegaNombre: bodegaNombre,  // Asignamos el nombre de la bodega aquí
-      });
-    });
-
-    res.json({ bodegaInventarios });
+    const bodegas = await buildProductBodegas(productoId, empresa_id);
+    res.json({ bodegaInventarios: bodegas });
   } catch (error) {
     console.error('Error al obtener inventario del producto:', error.message);
     return res.status(500).json({ error: 'No se pudo obtener el inventario del producto.' });
@@ -443,45 +396,53 @@ const bulkProduct = async (req, res) => {
     const batch = db.batch();
     const empresaId = req.user.empresa;
 
-    const productosMap = new Map(); // clave -> { productoId, nombre, categoria, precio }
-
+    const productosMap = new Map(); // clave -> info producto
     const productosConIds = [];
 
     for (const p of productos) {
-      const clave = p.clave?.trim();
+      // 🔥 Normalización segura (evita errores de .trim())
+      const clave = String(p.clave || '').trim();
+      const categoria = String(p.categoria || '').trim();
+      const nombre = String(p.nombre || '').trim();
+      const precio = parseFloat(p.precio);
+      const bodegaId = String(p.bodegaId || '').trim();
+      const bodegaNombre = String(p.bodegaNombre || 'Bodega desconocida').trim();
+      const cantidad = parseInt(p.cantidad, 10);
 
+      // ✅ Validación robusta
       if (
-        clave && p.categoria && p.nombre && p.precio &&
-        p.bodegaId && p.cantidad
+        clave &&
+        categoria &&
+        nombre &&
+        !isNaN(precio) &&
+        bodegaId &&
+        !isNaN(cantidad)
       ) {
         let productoInfo;
 
-        // Si el producto ya fue procesado con la misma clave, reutilizamos su ID
+        // Reutilizar producto si ya existe por clave
         if (productosMap.has(clave)) {
           productoInfo = productosMap.get(clave);
         } else {
-          // Creamos nuevo documento para este producto
           const productoRef = db.collection('productos').doc();
           const productoId = productoRef.id;
 
           const productoData = {
             clave,
-            categoria: p.categoria.trim(),
-            nombre: p.nombre.trim(),
-            precio: parseFloat(p.precio),
+            categoria,
+            nombre,
+            precio,
             empresa_id: empresaId,
           };
 
           batch.set(productoRef, productoData);
+
           productoInfo = { productoId, ...productoData };
           productosMap.set(clave, productoInfo);
         }
 
-        // Crear inventario por bodega
+        // Crear inventario
         const inventarioRef = db.collection('inventario').doc();
-        const cantidad = parseInt(p.cantidad);
-        const bodegaId = p.bodegaId.trim();
-        const bodegaNombre = p.bodegaNombre?.trim() || 'Bodega desconocida';
 
         batch.set(inventarioRef, {
           producto_id: productoInfo.productoId,
@@ -497,13 +458,15 @@ const bulkProduct = async (req, res) => {
           bodega_nombre: bodegaNombre,
           cantidad,
         });
+
       } else {
-        console.warn('Fila omitida por campos incompletos:', p);
+        console.warn('⚠️ Fila omitida por datos inválidos:', p);
       }
     }
 
     await batch.commit();
 
+    // Registrar historial
     await Promise.all(productosConIds.map(async (item) => {
       await registrarMovimientoInventario({
         producto_id: item.producto_id,
@@ -521,11 +484,15 @@ const bulkProduct = async (req, res) => {
       });
     }));
 
-    return res.status(201).json({ message: 'Productos e inventario agregados correctamente.' });
+    return res.status(201).json({
+      message: 'Productos e inventario agregados correctamente.'
+    });
 
   } catch (error) {
-    console.error('Error en carga masiva:', error);
-    return res.status(500).json({ error: 'Error al guardar los productos.' });
+    console.error('❌ Error en carga masiva:', error);
+    return res.status(500).json({
+      error: 'Error al guardar los productos.'
+    });
   }
 };
 

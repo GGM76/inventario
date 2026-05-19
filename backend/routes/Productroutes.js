@@ -18,12 +18,12 @@ const { authenticateToken, checkAdmin } = require('../Middleware/authMiddleware'
 const router = express.Router();
 
 router.get('/products', authenticateToken, getProducts);
-router.put('/products/:id', authenticateToken, updateProduct);
+router.put('/products/:id', authenticateToken, checkAdmin, updateProduct);
 router.get('/products/:id', authenticateToken, getProductDetails);
 router.get('/product-total-quantity', authenticateToken, getProductTotalQuantity);
 
 router.get('/product-inventory', authenticateToken, getProductInventory);
-router.put('/product-inventory', authenticateToken, updateProductInventory);
+router.put('/product-inventory', authenticateToken, checkAdmin, updateProductInventory);
 
 router.put('/update-inventory-manual', authenticateToken, checkAdmin, updateInventoryManual);
 router.put('/update-inventory-history', authenticateToken, checkAdmin, updateInventoryHistory);

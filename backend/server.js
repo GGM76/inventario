@@ -8,6 +8,7 @@ const bodegaRoutes = require('./routes/bodegaRoutes');
 const userRoutes = require('./routes/userRoutes');
 const projectRoutes = require('./routes/projectRoutes');
 const subprojectRoutes = require('./routes/subprojectRoutes');
+const dispersionRoutes = require('./routes/dispersionRoutes');
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use('/roomies/', bodegaRoutes);
 app.use('/roomies/', userRoutes);
 app.use('/roomies/', projectRoutes);
 app.use('/roomies/', subprojectRoutes);
+app.use('/roomies/', dispersionRoutes);
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {

@@ -1,6 +1,6 @@
 // src/redux/reducers/authSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import axios from '../../services/axiosConfig';
 
 // Acción para iniciar sesión
 export const login = createAsyncThunk(

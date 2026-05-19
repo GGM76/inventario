@@ -98,6 +98,72 @@ const ProjectDetail = () => {
     XLSX.writeFile(workbook, `${filename}.xlsx`);
   };
 
+  const handleDownloadDispersion = async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/roomies/projects/${id}/dispersiones`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const dispersiones = response.data.dispersions || response.data.dispersiones || [];
+
+      if (dispersiones.length === 0) {
+        Swal.fire({
+          icon: 'info',
+          title: 'Sin dispersión',
+          text: 'No se encontraron datos de dispersión para este proyecto.',
+        });
+        return;
+      }
+
+      const rows = [];
+      dispersiones.forEach((dispersion) => {
+        const metadata = dispersion.metadata || {};
+        const fechaCreacion = dispersion.fechaCreacion ? new Date(dispersion.fechaCreacion).toLocaleString() : '';
+        const baseFields = {
+          DispersionID: dispersion.id,
+          Proyecto: dispersion.proyecto_nombre || project?.nombre || '',
+          Fecha: fechaCreacion,
+          Ejecutivo: metadata.ejecutivoCuenta || '',
+          Grouper: metadata.grouper || '',
+          Empresa: metadata.empresa || '',
+          CentroCostos: metadata.centroCostos || '',
+          Cotizacion: metadata.cotizacion || '',
+          FechaSolicitud: metadata.fechaSolicitud || '',
+        };
+
+        (dispersion.registros || []).forEach((registro, index) => {
+          const row = {
+            ...baseFields,
+            Fila: index + 1,
+            Ciudad: registro.ciudad || '',
+            Contacto: registro.contacto || '',
+            Direccion: registro.direccion || '',
+            Paqueterias: registro.paqueterias || '',
+            Guias: registro.guias || '',
+            Telefono: registro.telefono || '',
+            Demos: registro.demos || '',
+          };
+
+          const productosDispersos = registro.productosDispersos || {};
+          Object.values(productosDispersos).forEach((producto) => {
+            row[producto.nombre] = producto.cantidad;
+          });
+
+          rows.push(row);
+        });
+      });
+
+      exportToExcel(rows, `Dispersión_Proyecto_${project?.nombre || id}`);
+    } catch (err) {
+      console.error('Error al descargar dispersión:', err);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo descargar la dispersión del proyecto.',
+      });
+    }
+  };
+
   const handleSubmit = async () => {
     const productos = Object.entries(productSelection)
       .filter(([, cantidad]) => cantidad > 0)
@@ -190,22 +256,33 @@ const ProjectDetail = () => {
       <h1>Detalles del Proyecto</h1>
       <p><strong>Nombre:</strong> {project.nombre}</p>
       <p><strong>Descripción:</strong> {project.descripcion}</p>
+      <div className="row g-2 mb-3">
+        <div className="col-12 col-sm-auto">
+          <button
+            className="custom-btn cancel-btn w-100"
+            onClick={() => {
+              const data = project.productos.map(p => ({
+                Producto: p.nombre,
+                Cantidad: p.cantidadTotal
+              }));
+              exportToExcel(data, `Inventario_Proyecto_${project.nombre}`);
+            }}
+          >
+            Descargar Inventario
+          </button>
+        </div>
+        <div className="col-12 col-sm-auto">
+          <button
+            className="custom-btn add-btn w-100"
+            onClick={handleDownloadDispersion}
+          >
+            Descargar Dispersión
+          </button>
+        </div>
+      </div>
+
       {userRole === 'admin' && (
   <div className="row g-2 mb-3">
-    <div className="col-12 col-sm-auto">
-      <button
-        className="custom-btn cancel-btn w-100"
-        onClick={() => {
-          const data = project.productos.map(p => ({
-            Producto: p.nombre,
-            Cantidad: p.cantidadTotal
-          }));
-          exportToExcel(data, `Inventario_Proyecto_${project.nombre}`);
-        }}
-            >
-              Descargar Inventario
-            </button>
-          </div>
           <div className="col-12 col-sm-auto">
             <button
               className="custom-btn project-btn w-100"
@@ -224,10 +301,10 @@ const ProjectDetail = () => {
           </div>
           <div className="col-12 col-sm-auto">
             <button
-              className="custom-btn cancel-btn w-100"
-              onClick={() => handleOpenModal(null, 'use')}
+              className="custom-btn project-btn w-100"
+              onClick={() => navigate(`/projects/${id}/mass-use`)}
             >
-              Usar Productos
+              Dispersion Masiva
             </button>
           </div>
           <div className="col-12 col-sm-auto">
@@ -269,6 +346,19 @@ const ProjectDetail = () => {
                   <li key={p.id}>{p.nombre}: {p.cantidad}</li>
                 ))}
               </ul>
+              <button
+                className="custom-btn dashboard-btn me-2"
+                onClick={() => {
+                  const data = sp.productos.map(p => ({
+                    Producto: p.nombre,
+                    Cantidad: p.cantidad
+                  }));
+                  exportToExcel(data, `Inventario_Subproyecto_${sp.nombre}`);
+                }}
+              >
+                Descargar Inventario Subproyecto
+              </button>
+
               {userRole === 'admin' && (
               <div className="d-flex flex-wrap gap-2 mt-2">
                 <button
@@ -288,18 +378,6 @@ const ProjectDetail = () => {
                   onClick={() => handleOpenModal(sp, 'use')}
                 >
                   Usar Productos
-                </button>
-                <button
-                  className="custom-btn dashboard-btn me-2"
-                  onClick={() => {
-                    const data = sp.productos.map(p => ({
-                      Producto: p.nombre,
-                      Cantidad: p.cantidad
-                    }));
-                    exportToExcel(data, `Inventario_Subproyecto_${sp.nombre}`);
-                  }}
-                >
-                  Descargar Inventario Subproyecto
                 </button>
 
               </div>

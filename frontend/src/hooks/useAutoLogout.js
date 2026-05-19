@@ -1,51 +1,74 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const useAutoLogout = (inactivityTimeout = 15 * 60 * 1000) => {  // Tiempo en milisegundos (15 minutos por defecto)
+const DEFAULT_INACTIVITY_TIMEOUT = 60 * 60 * 1000; // 1 hora en milisegundos
+
+const useAutoLogout = (inactivityTimeout = DEFAULT_INACTIVITY_TIMEOUT) => {
   const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem('authToken');
-    
     if (!token) {
-      return; // No hacemos nada si no hay token, lo que evitará redirecciones innecesarias
+      return;
     }
 
-    // Función para verificar la expiración del token
-    const checkTokenExpiration = () => {
-      const decodedToken = JSON.parse(atob(token.split('.')[1]));  // Decodificamos el JWT
-      const expirationTime = decodedToken.exp * 1000;  // Convertir el tiempo de expiración a milisegundos
+    const logout = () => {
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('userRole');
+      localStorage.removeItem('userEmpresaId');
+      localStorage.removeItem('userEmail');
+      localStorage.removeItem('lastActivity');
+      navigate('/login');
+    };
 
-      if (expirationTime < Date.now()) {
-        // Si el token ha expirado, redirigir al login
-        localStorage.removeItem('authToken');
-        navigate('/login');
+    const isTokenExpired = () => {
+      try {
+        const token = localStorage.getItem('authToken');
+        if (!token) return true;
+
+        const decodedToken = JSON.parse(atob(token.split('.')[1]));
+        const expirationTime = decodedToken.exp * 1000;
+        return expirationTime < Date.now();
+      } catch (error) {
+        return true; // Si hay error decodificando, considerar expirado
       }
     };
 
-    // Función para manejar la inactividad
-    const handleInactivity = () => {
-      const timer = setTimeout(() => {
-        checkTokenExpiration();
-      }, inactivityTimeout);
-
-      // Limpiar el timer cuando haya actividad del usuario
-      const resetTimer = () => {
-        clearTimeout(timer);
-        handleInactivity();  // Reiniciar el temporizador
-      };
-
-      // Detectamos eventos de actividad (click, teclado, etc.)
-      const events = ['click', 'mousemove', 'keydown', 'scroll'];
-      events.forEach(event => window.addEventListener(event, resetTimer));
-
-      return () => {
-        events.forEach(event => window.removeEventListener(event, resetTimer));
-        clearTimeout(timer);
-      };
+    const updateLastActivity = () => {
+      localStorage.setItem('lastActivity', Date.now().toString());
     };
 
-    handleInactivity();
+    const checkInactivity = () => {
+      const lastActivity = localStorage.getItem('lastActivity');
+      if (!lastActivity) {
+        logout();
+        return;
+      }
+
+      const inactivityDuration = Date.now() - Number(lastActivity);
+      if (inactivityDuration >= inactivityTimeout || isTokenExpired()) {
+        logout();
+      }
+    };
+
+    const handleActivity = () => {
+      if (isTokenExpired()) {
+        logout();
+        return;
+      }
+      updateLastActivity();
+    };
+
+    const activityEvents = ['click', 'mousemove', 'keydown', 'scroll', 'touchstart'];
+    activityEvents.forEach((event) => window.addEventListener(event, handleActivity));
+
+    updateLastActivity();
+    const inactivityTimer = window.setInterval(checkInactivity, 60 * 1000);
+
+    return () => {
+      activityEvents.forEach((event) => window.removeEventListener(event, handleActivity));
+      window.clearInterval(inactivityTimer);
+    };
   }, [inactivityTimeout, navigate]);
 };
 

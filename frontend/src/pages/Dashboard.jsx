@@ -52,12 +52,33 @@ const Dashboard = () => {
       return;
     }
   
-    const exportData = products.map((product) => ({
-      Nombre: product.nombre,
-      Categoría: product.categoria || '',
-      Cantidad_Total: product.totalQuantity ?? 0,
-      Precio: product.precio || '',
-    }));
+    const exportData = [];
+    products.forEach((product) => {
+      const bodegas = product.bodegas || [];
+      if (bodegas.length > 0) {
+        bodegas.forEach((bodega, index) => {
+          exportData.push({
+            Nombre: product.nombre,
+            Categoría: product.categoria || '',
+            Precio: product.precio || '',
+            Cantidad_Total: index === 0 ? product.totalQuantity ?? 0 : '',
+            Bodega: bodega.bodegaNombre || bodega.nombre || '',
+            Ubicación: bodega.ubicacion || '',
+            Cantidad_Bodega: bodega.cantidadDisponible ?? bodega.cantidad ?? 0,
+          });
+        });
+      } else {
+        exportData.push({
+          Nombre: product.nombre,
+          Categoría: product.categoria || '',
+          Precio: product.precio || '',
+          Cantidad_Total: product.totalQuantity ?? 0,
+          Bodega: 'Sin bodega asignada',
+          Ubicación: '',
+          Cantidad_Bodega: 0,
+        });
+      }
+    });
   
     const worksheet = XLSX.utils.json_to_sheet(exportData);
     const workbook = XLSX.utils.book_new();
@@ -204,10 +225,13 @@ const Dashboard = () => {
           <button className="custom-btn add-btn" onClick={handleAddBodega}>Agregar Bodega</button>
           <button className="custom-btn add-btn" onClick={handleAddProductToBodega}>Poner productos en bodegas</button>
           <button className="custom-btn add-btn" onClick={() => navigate('/mass-product-upload')}>Agregación Masiva</button>
-          <button className="custom-btn" onClick={handleExportToExcel}>  Descargar Inventario</button>
 
         </div>
       )}
+
+      <div className="dashboard-buttons">
+        <button className="custom-btn" onClick={handleExportToExcel}>Descargar Inventario</button>
+      </div>
 
 
 {showBodegaModal && (

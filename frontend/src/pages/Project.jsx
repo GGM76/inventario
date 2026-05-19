@@ -157,6 +157,11 @@ const Projects = () => {
       {/* Sección de acciones */}
       <div className="projects-actions-box">
       <div className="projects-actions">
+          <div className="action-left">
+            <button onClick={handleDownloadAllHistories} className="custom-btn">
+              Descargar Todos los Detalles
+            </button>
+          </div>
           {userRole === 'admin' && (
             <div className="action-left">
               <button onClick={handleAddProject} className="custom-btn add-btn">
@@ -165,9 +170,6 @@ const Projects = () => {
               {/* <button onClick={handleDeleteAllProjects} className="button-seed delete-all">
                 Eliminar Todos los Proyectos
               </button> */}
-              <button onClick={handleDownloadAllHistories} className="custom-btn">
-                Descargar Todos los Detalles
-              </button>
             </div>
           )}
           {/* Mover el botón 'Volver al Inventario' dentro de esta sección */}
