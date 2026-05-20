@@ -18,7 +18,7 @@ const AddProject = () => {
   const [productQuantities, setProductQuantities] = useState({});
   const [productMaxQuantities, setProductMaxQuantities] = useState({});
   const [productInventories, setProductInventories] = useState({});
-  //const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const userEmpresaId = localStorage.getItem('userEmpresaId');
@@ -201,7 +201,7 @@ const AddProject = () => {
         {editProjectId ? 'Agregar productos al proyecto existente' : 'Crear nuevo proyecto'}
       </h1>
       {error && <p className="error-message">{error}</p>}
-
+      {loading && <div className="loading-overlay">Cargando...</div>}
       <form onSubmit={handleSubmit}>
         {!editProjectId && (
           <>

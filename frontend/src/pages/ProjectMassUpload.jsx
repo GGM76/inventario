@@ -1,3 +1,4 @@
+// src/pages/ProjectMassUpload.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import * as XLSX from 'xlsx';
@@ -9,10 +10,9 @@ const ProjectMassUpload = () => {
   const { projectId } = useParams();
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
-  //const [file, setFile] = useState(null);
   const [previewData, setPreviewData] = useState([]);
   const [errors, setErrors] = useState([]);
-  
+
   // Campos del formulario
   const [formData, setFormData] = useState({
     ejecutivoCuenta: '',
@@ -58,22 +58,17 @@ const ProjectMassUpload = () => {
   const descargarPlantilla = () => {
     if (!project || !project.productos) return;
 
-    // Columnas fijas
     const fixedHeaders = ['CIUDAD', 'CONTACTO', 'DIRECCION', 'PAQUETERIAS', 'GUIAS', 'TELEFONO', 'DEMOS'];
-    
-    // Columnas dinámicas para productos
     const productHeaders = project.productos.map(p => p.nombre);
-    
     const headers = [...fixedHeaders, ...productHeaders];
-    
-    // Crear una fila de ejemplo
+
     const exampleRow = headers.map(() => '');
-    
     const worksheetData = [headers, exampleRow];
+
     const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Plantilla');
-    
+
     XLSX.writeFile(workbook, `plantilla_${project.nombre.replace(/\s+/g, '_')}.xlsx`);
   };
 
@@ -88,7 +83,7 @@ const ProjectMassUpload = () => {
 
       // Validar campos fijos
       fixedColumns.forEach(col => {
-        if (!row[col] || row[col] === undefined || row[col] === null) {
+        if (!row[col]) {
           rowErrors.push(`Fila ${index + 1}: Falta "${col}"`);
         }
       });
@@ -96,14 +91,11 @@ const ProjectMassUpload = () => {
       // Validar productos
       productNames.forEach(productName => {
         const value = row[productName];
-        
-        // Verificar que no sea null, undefined o NaN
         if (value === undefined || value === null || value === '') {
           rowErrors.push(`Fila ${index + 1}: Falta valor para "${productName}"`);
         } else if (isNaN(Number(value))) {
           rowErrors.push(`Fila ${index + 1}: "${productName}" debe ser un número`);
         } else {
-          // Verificar que no exceda el inventario
           const product = project.productos.find(p => p.nombre === productName);
           if (product && Number(value) > product.cantidadTotal) {
             rowErrors.push(`Fila ${index + 1}: "${productName}" excede inventario (máx: ${product.cantidadTotal})`);
@@ -122,7 +114,6 @@ const ProjectMassUpload = () => {
   // Manejar cambio de archivo
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
-    setFile(selectedFile);
     setErrors([]);
     setPreviewData([]);
 
@@ -145,15 +136,10 @@ const ProjectMassUpload = () => {
           return;
         }
 
-        // Validar el archivo
         const validationErrors = validateFile(parsedData);
-        
-        if (validationErrors.length > 0) {
-          setErrors(validationErrors);
-          setPreviewData(parsedData);
-        } else {
-          setPreviewData(parsedData);
-        }
+        setErrors(validationErrors);
+        setPreviewData(parsedData);
+
       } catch (err) {
         console.error('Error al leer archivo:', err);
         Swal.fire({
@@ -168,7 +154,6 @@ const ProjectMassUpload = () => {
 
   // Enviar datos al backend
   const handleSubmit = async () => {
-    // Validar campos del formulario
     const requiredFields = ['ejecutivoCuenta', 'grouper', 'empresa', 'centroCostos', 'cotizacion', 'fechaSolicitud'];
     const missingFields = requiredFields.filter(field => !formData[field]);
 
@@ -260,72 +245,19 @@ const ProjectMassUpload = () => {
         </div>
         <div className="card-body">
           <div className="row">
-            <div className="col-md-4 mb-3">
-              <label className="form-label">Ejecutivo de Cuenta *</label>
-              <input
-                type="text"
-                className="form-control"
-                name="ejecutivoCuenta"
-                value={formData.ejecutivoCuenta}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-            <div className="col-md-4 mb-3">
-              <label className="form-label">Grouper *</label>
-              <input
-                type="text"
-                className="form-control"
-                name="grouper"
-                value={formData.grouper}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-            <div className="col-md-4 mb-3">
-              <label className="form-label">Empresa *</label>
-              <input
-                type="text"
-                className="form-control"
-                name="empresa"
-                value={formData.empresa}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-            <div className="col-md-4 mb-3">
-              <label className="form-label">Centro de Costos *</label>
-              <input
-                type="text"
-                className="form-control"
-                name="centroCostos"
-                value={formData.centroCostos}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-            <div className="col-md-4 mb-3">
-              <label className="form-label">Cotización *</label>
-              <input
-                type="text"
-                className="form-control"
-                name="cotizacion"
-                value={formData.cotizacion}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-            <div className="col-md-4 mb-3">
-              <label className="form-label">Fecha de Solicitud *</label>
-              <input
-                type="date"
-                className="form-control"
-                name="fechaSolicitud"
-                value={formData.fechaSolicitud}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
+            {Object.keys(formData).map((key) => (
+              <div className="col-md-4 mb-3" key={key}>
+                <label className="form-label">{key.replace(/([A-Z])/g, ' $1').toUpperCase()} *</label>
+                <input
+                  type={key === 'fechaSolicitud' ? 'date' : 'text'}
+                  className="form-control"
+                  name={key}
+                  value={formData[key]}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+            ))}
           </div>
         </div>
       </div>
