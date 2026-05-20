@@ -3,7 +3,8 @@ import React from 'react';
 import ProductForm from '../components/ProductForm';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { addProduct, fetchProducts } from '../redux/reducers/productSlice'; // Usamos Redux en lugar de API directa
+//import { addProduct, fetchProducts } from '../redux/reducers/productSlice'; // Usamos Redux en lugar de API directa
+import {fetchProducts } from '../redux/reducers/productSlice'; // Usamos Redux en lugar de API directa
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import '../styles/AddProductPage.css';

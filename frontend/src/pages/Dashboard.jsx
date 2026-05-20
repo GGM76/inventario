@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
-import { logout } from '../redux/reducers/authSlice';
+//import { logout } from '../redux/reducers/authSlice';
 import { useNavigate } from 'react-router-dom';
 import ProductList from '../components/ProductList';
 import { fetchProductTotalQuantity, fetchProducts, deleteProduct, setProducts } from '../redux/reducers/productSlice';
@@ -193,14 +193,14 @@ const Dashboard = () => {
     }
   };
 
-  const handleManageUsers = () => {
+  /*const handleManageUsers = () => {
     navigate('/manage-users');
   };
 
   const handleProjects = () => {
     navigate('/projects');  // Redirige a la página de proyectos
   };
-
+  */
   const empresaLogos = {
     Seedgroup: '/images/seed-logo.png',
     Mutis: '/images/mutis-logo.jfif',

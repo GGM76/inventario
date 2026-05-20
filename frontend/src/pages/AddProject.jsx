@@ -18,7 +18,7 @@ const AddProject = () => {
   const [productQuantities, setProductQuantities] = useState({});
   const [productMaxQuantities, setProductMaxQuantities] = useState({});
   const [productInventories, setProductInventories] = useState({});
-  const [loading, setLoading] = useState(false);
+  //const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const userEmpresaId = localStorage.getItem('userEmpresaId');

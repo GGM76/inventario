@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+//import React, { useEffect, useState } from 'react';
+import React, { useEffect} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
 import { fetchProjects } from '../redux/reducers/projectSlice';
@@ -100,7 +101,7 @@ const Projects = () => {
     project.nombre.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleDeleteAllProjects = async () => {
+  /*const handleDeleteAllProjects = async () => {
     const confirm1 = await Swal.fire({
       title: '¿Estás seguro?',
       text: '¿Estás seguro de que quieres eliminar TODOS los proyectos? Esta acción no se puede deshacer.',
@@ -148,7 +149,7 @@ const Projects = () => {
         text: 'Hubo un error al eliminar los proyectos.',
       });
     }
-  };
+  };*/
   
   return (
     <div className="projects-container">
