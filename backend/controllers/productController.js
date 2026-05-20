@@ -1,9 +1,9 @@
 //controlles/productController.js
 const { db } = require('../config/firebase');
 const { admin } = require('../config/firebase');
-const registerInventoryLog  = require('../services/registerInventoryLog');
-const registrarMovimientoInventario = require('../services/registerInventoryLog');
+const registerInventoryLog = require('../services/registerInventoryLog');
 
+// Construye el listado de bodegas con stock para un producto dado.
 const buildProductBodegas = async (productoId, empresa_id) => {
   let inventarioQuery = db.collection('inventario').where('producto_id', '==', productoId);
   if (empresa_id) {
@@ -49,9 +49,9 @@ const buildProductBodegas = async (productoId, empresa_id) => {
   return bodegas;
 };
 
-// Obtener productos por empresa
+// Devuelve productos con su stock agrupado por bodega para una empresa.
 const getProducts = async (req, res) => {
-  const empresa_id = req.query.empresa_id;  // Obtener 'empresa_id' desde los parámetros de consulta
+  const empresa_id = req.query.empresa_id;
   if (!empresa_id) {
     return res.status(400).json({ error: 'El parámetro "empresa_id" no está presente.' });
   }
@@ -59,14 +59,13 @@ const getProducts = async (req, res) => {
   try {
     const productsSnapshot = await admin.firestore()
       .collection('productos')
-      .where('empresa_id', '==', empresa_id)  // Filtramos por 'empresa_id'
+      .where('empresa_id', '==', empresa_id)
       .get();
 
     if (productsSnapshot.empty) {
       return res.status(404).json({ error: 'No se encontraron productos para esta empresa.' });
     }
 
-    // Mapeamos los productos y agregamos las bodegas correspondientes desde inventario
     const products = await Promise.all(
       productsSnapshot.docs.map(async (doc) => {
         const productData = doc.data();
@@ -76,22 +75,21 @@ const getProducts = async (req, res) => {
       })
     );
 
-    res.json(products);  // Retornamos los productos con las bodegas
+    res.json(products);
   } catch (error) {
     console.error('Error al obtener productos:', error);
     res.status(400).json({ error: error.message });
   }
 };
-// Agregar un producto
+// Agrega un nuevo producto a la colección de productos.
 const addProduct = async (req, res) => {
   try {
-    const { clave, categoria, nombre, precio, empresa_id } = req.body;  // Obtener todos los campos, incluyendo empresa_id
+    const { clave, categoria, nombre, precio, empresa_id } = req.body;
 
-    if (!empresa_id) {  // Validamos que 'empresa_id' esté presente en la solicitud
+    if (!empresa_id) {
       return res.status(400).json({ error: 'El parámetro "empresa_id" no está presente.' });
     }
 
-    // Validamos que los campos necesarios estén presentes
     if (!clave || !categoria || !nombre || !precio) {
       return res.status(400).json({ error: 'Faltan campos requeridos.' });
     }
@@ -101,30 +99,28 @@ const addProduct = async (req, res) => {
       categoria, 
       nombre, 
       precio, 
-      empresa_id // Asociamos el producto con el empresa_id recibido en la solicitud
+      empresa_id
     };
 
-    // Agregamos el nuevo producto a Firestore
     const docRef = await db.collection('productos').add(newProduct);
-    res.status(201).json({ id: docRef.id, ...newProduct });  // Retornamos el producto creado con su ID
+    res.status(201).json({ id: docRef.id, ...newProduct });
   } catch (error) {
     res.status(500).json({ error: 'Error agregando producto' });
   }
 };
-// Actualizar producto
+// Actualiza los datos básicos de un producto.
 const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
     const updatedData = req.body;
     
-    // Actualizamos los datos del producto en Firestore
     await db.collection('productos').doc(id).update(updatedData);
     res.json({ id, ...updatedData });
   } catch (error) {
     res.status(500).json({ error: 'Error actualizando producto' });
   }
 };
-// Eliminar producto
+// Elimina un producto por su ID.
 const deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
@@ -135,12 +131,12 @@ const deleteProduct = async (req, res) => {
   }
 };
 
-// Obtener detalles de un producto
+// Obtiene los detalles de un producto junto con las bodegas donde está disponible.
 const getProductDetails = async (req, res) => {
-  const { id } = req.params;  // Obtener el id del producto
+  const { id } = req.params;
 
   try {
-    const productDoc = await db.collection('productos').doc(id).get();  // Buscar el producto por ID
+    const productDoc = await db.collection('productos').doc(id).get();
 
     if (!productDoc.exists) {
       return res.status(404).json({ error: 'Producto no encontrado' });
@@ -150,7 +146,6 @@ const getProductDetails = async (req, res) => {
     const empresaId = productData.empresa_id || req.query.empresa_id;
     const bodegas = await buildProductBodegas(id, empresaId);
 
-    // Devolvemos el producto con las bodegas asociadas
     return res.json({ id: productDoc.id, ...productData, bodegas });
 
   } catch (error) {
@@ -160,14 +155,12 @@ const getProductDetails = async (req, res) => {
 };
 
 
-// Endpoint para obtener la cantidad total de un producto en todas las bodegas
+// Calcula la cantidad total de un producto en todas las bodegas de una empresa.
 const getProductTotalQuantity = async (req, res) => {
   try {
     const { productoId, empresa_id } = req.query;
 
-    // Obtener todas las entradas de inventario para el producto de la empresa
-    const inventarioRef = db.collection('inventario');
-    const inventarioSnapshot = await inventarioRef
+    const inventarioSnapshot = await db.collection('inventario')
       .where('producto_id', '==', productoId)
       .where('empresa_id', '==', empresa_id)
       .get();
@@ -176,18 +169,13 @@ const getProductTotalQuantity = async (req, res) => {
 
     inventarioSnapshot.forEach(doc => {
       const cantidad = doc.data().cantidad;
-      
-      // Verificar si la cantidad es válida antes de sumarla
       if (cantidad !== null && cantidad !== undefined && !isNaN(cantidad) && cantidad >= 0) {
-        totalQuantity += parseInt(cantidad, 10);  // Asegurarse de que la cantidad sea un número
+        totalQuantity += parseInt(cantidad, 10);
       } else if (cantidad !== 0) {
-        // Solo mostrar warning para valores realmente inválidos, no para 0
         console.warn(`Cantidad inválida en el inventario del producto ${productoId}:`, cantidad);
       }
-      // Si cantidad es 0, simplemente no se suma (es válido, significa sin stock)
     });
 
-    // Devuelve el total calculado
     return res.status(200).json({ totalQuantity });
   } catch (error) {
     console.error('Error al obtener la cantidad total del producto:', error);
@@ -195,7 +183,7 @@ const getProductTotalQuantity = async (req, res) => {
   }
 };
 
-// Función para obtener las cantidades de un producto en todas las bodegas
+// Devuelve inventario por bodega para un producto y empresa.
 const getProductInventory = async (req, res) => {
   const { productoId, empresa_id } = req.query;
 
@@ -208,20 +196,17 @@ const getProductInventory = async (req, res) => {
   }
 };
 
-// Controlador para actualizar el inventario
+// Actualiza el inventario restando cantidades por bodega.
 const updateProductInventory = async (req, res) => {
-  const { productos } = req.body;  // Productos con las cantidades por bodega
+  const { productos } = req.body;
   try {
-    // Iteramos sobre los productos y actualizamos las cantidades por bodega
     await Promise.all(productos.map(async (producto) => {
       const productId = producto.id;
-      const bodegasSeleccionadas = producto.bodegasSeleccionadas; // bodegaId y cantidadSeleccionada
+      const bodegasSeleccionadas = producto.bodegasSeleccionadas;
 
-      // Para cada bodega seleccionada, actualizamos la cantidad
       await Promise.all(bodegasSeleccionadas.map(async (bodega) => {
         const { bodegaId, cantidadSeleccionada } = bodega;
 
-        // Buscamos el inventario para este producto y bodega
         const inventarioSnapshot = await db.collection('inventario')
           .where('producto_id', '==', productId)
           .where('bodega_id', '==', bodegaId)
@@ -231,7 +216,6 @@ const updateProductInventory = async (req, res) => {
           return res.status(404).json({ error: `No se encontró inventario para el producto ${productId} en la bodega ${bodegaId}` });
         }
 
-        // Actualizamos la cantidad en el inventario
         const inventarioDoc = inventarioSnapshot.docs[0];
         const nuevaCantidad = inventarioDoc.data().cantidad - cantidadSeleccionada;
 
@@ -239,12 +223,10 @@ const updateProductInventory = async (req, res) => {
           return res.status(400).json({ error: `No hay suficiente inventario en la bodega ${bodegaId}` });
         }
 
-        // Actualizamos el inventario con la nueva cantidad
         await db.collection('inventario').doc(inventarioDoc.id).update({
           cantidad: nuevaCantidad,
         });
         
-        // Registrar en historial
         await registerInventoryLog({
           producto_id: productId,
           bodega_id: bodegaId,
@@ -264,6 +246,7 @@ const updateProductInventory = async (req, res) => {
   }
 };
 
+// Ajusta manualmente las cantidades de inventario por bodega.
 const updateInventoryManual = async (req, res) => {
   const { inventario } = req.body;
 
@@ -285,12 +268,10 @@ const updateInventoryManual = async (req, res) => {
       const inventarioDoc = inventarioSnapshot.docs[0];
       const cantidadAntes = inventarioDoc.data().cantidad;
 
-      // Actualizar inventario
       await db.collection('inventario').doc(inventarioDoc.id).update({
         cantidad: nuevaCantidad,
       });
 
-      // Obtener producto y bodega para log
       const [productoDoc, bodegaDoc] = await Promise.all([
         db.collection('productos').doc(producto_id).get(),
         db.collection('bodegas').doc(bodega_id).get()
@@ -299,8 +280,7 @@ const updateInventoryManual = async (req, res) => {
       const producto_nombre = productoDoc.exists ? productoDoc.data().nombre : 'Producto no encontrado';
       const bodega_nombre = bodegaDoc.exists ? bodegaDoc.data().nombre : 'Bodega no encontrada';
 
-      // Registrar log completo
-      await registrarMovimientoInventario({
+      await registerInventoryLog({
         producto_id,
         producto_nombre,
         empresa_id: req.user?.empresa || 'desconocida',
@@ -325,19 +305,17 @@ const updateInventoryManual = async (req, res) => {
 };
 
 
+// Actualiza inventario y guarda un historial simplificado de uso.
 const updateInventoryHistory = async (req, res) => {
-  const { productos } = req.body;  // Productos con las cantidades por bodega
+  const { productos } = req.body;
   try {
-    // Iteramos sobre los productos y actualizamos las cantidades por bodega
     await Promise.all(productos.map(async (producto) => {
       const productId = producto.id;
-      const bodegasSeleccionadas = producto.bodegasSeleccionadas; // bodegaId y cantidadSeleccionada
+      const bodegasSeleccionadas = producto.bodegasSeleccionadas;
 
-      // Para cada bodega seleccionada, actualizamos la cantidad
       await Promise.all(bodegasSeleccionadas.map(async (bodega) => {
         const { bodegaId, cantidadSeleccionada } = bodega;
 
-        // Buscamos el inventario para este producto y bodega
         const inventarioSnapshot = await db.collection('inventario')
           .where('producto_id', '==', productId)
           .where('bodega_id', '==', bodegaId)
@@ -347,32 +325,25 @@ const updateInventoryHistory = async (req, res) => {
           return res.status(404).json({ error: `No se encontró inventario para el producto ${productId} en la bodega ${bodegaId}` });
         }
 
-        // Tomamos el inventario actual
         const inventarioDoc = inventarioSnapshot.docs[0];
         const cantidadActual = inventarioDoc.data().cantidad;
-
-        // Calculamos la nueva cantidad
         const nuevaCantidad = cantidadActual - cantidadSeleccionada;
 
-        // Verificamos si la nueva cantidad es válida (no negativa)
         if (nuevaCantidad < 0) {
           return res.status(400).json({ error: `No hay suficiente inventario en la bodega ${bodegaId}` });
         }
 
-        // Actualizamos el inventario con la nueva cantidad
         await db.collection('inventario').doc(inventarioDoc.id).update({
           cantidad: nuevaCantidad,
         });
 
-        // Guardamos en el historial (simplificado)
         const historialData = {
           producto_id: productId,
           cantidad_usada: cantidadSeleccionada,
-          fecha_usada: new Date(),  // Usamos la fecha actual
-          usuario_id: req.user.id,  // Opcional: ID del usuario
+          fecha_usada: new Date(),
+          usuario_id: req.user.id,
         };
 
-        // Guardamos el historial de la actualización de inventario
         await db.collection('historial_inventario').add(historialData);
       }));
     }));
@@ -384,6 +355,7 @@ const updateInventoryHistory = async (req, res) => {
   }
 };
 
+// Procesa carga masiva de productos e inventario para una empresa.
 const bulkProduct = async (req, res) => {
   try {
     const productos = req.body.productos;
@@ -392,15 +364,14 @@ const bulkProduct = async (req, res) => {
       return res.status(400).json({ error: 'No se proporcionaron productos válidos.' });
     }
 
-    const db = admin.firestore();
-    const batch = db.batch();
+    const adminDb = admin.firestore();
+    const batch = adminDb.batch();
     const empresaId = req.user.empresa;
 
-    const productosMap = new Map(); // clave -> info producto
+    const productosMap = new Map();
     const productosConIds = [];
 
     for (const p of productos) {
-      // 🔥 Normalización segura (evita errores de .trim())
       const clave = String(p.clave || '').trim();
       const categoria = String(p.categoria || '').trim();
       const nombre = String(p.nombre || '').trim();
@@ -409,7 +380,6 @@ const bulkProduct = async (req, res) => {
       const bodegaNombre = String(p.bodegaNombre || 'Bodega desconocida').trim();
       const cantidad = parseInt(p.cantidad, 10);
 
-      // ✅ Validación robusta
       if (
         clave &&
         categoria &&
@@ -420,11 +390,10 @@ const bulkProduct = async (req, res) => {
       ) {
         let productoInfo;
 
-        // Reutilizar producto si ya existe por clave
         if (productosMap.has(clave)) {
           productoInfo = productosMap.get(clave);
         } else {
-          const productoRef = db.collection('productos').doc();
+          const productoRef = adminDb.collection('productos').doc();
           const productoId = productoRef.id;
 
           const productoData = {
@@ -441,8 +410,7 @@ const bulkProduct = async (req, res) => {
           productosMap.set(clave, productoInfo);
         }
 
-        // Crear inventario
-        const inventarioRef = db.collection('inventario').doc();
+        const inventarioRef = adminDb.collection('inventario').doc();
 
         batch.set(inventarioRef, {
           producto_id: productoInfo.productoId,
@@ -466,9 +434,8 @@ const bulkProduct = async (req, res) => {
 
     await batch.commit();
 
-    // Registrar historial
     await Promise.all(productosConIds.map(async (item) => {
-      await registrarMovimientoInventario({
+      await registerInventoryLog({
         producto_id: item.producto_id,
         producto_nombre: item.producto_nombre,
         empresa_id: empresaId,

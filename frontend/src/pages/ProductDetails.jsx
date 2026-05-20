@@ -7,8 +7,8 @@ const ProductDetails = () => {
   const { id } = useParams();
   const userRole = localStorage.getItem('userRole');
   const [product, setProduct] = useState(null);
-  const [originalProduct, setOriginalProduct] = useState(null); // Guardamos el estado original
-  const [isEditable, setIsEditable] = useState(false);  // Controla el modo de edición
+  const [originalProduct, setOriginalProduct] = useState(null);
+  const [isEditable, setIsEditable] = useState(false);
 
   useEffect(() => {
     const fetchProductDetails = async () => {
@@ -21,7 +21,7 @@ const ProductDetails = () => {
       if (response.ok) {
         const data = await response.json();
         setProduct(data);
-        setOriginalProduct(data); // Guardamos el producto original
+        setOriginalProduct(data);
       } else {
         console.error('Error al obtener los detalles del producto');
       }
@@ -30,6 +30,7 @@ const ProductDetails = () => {
     fetchProductDetails();
   }, [id]);
 
+  // Activa modo edición solo para administradores.
   const handleEnableEdit = () => {
     if (userRole === 'admin') {
       setIsEditable(true);
@@ -42,12 +43,11 @@ const ProductDetails = () => {
     }
   };
   
+  // Guarda los cambios manuales de inventario para cada bodega.
   const handleGuardarCambios = async () => {
     const token = localStorage.getItem('authToken');
-    const empresaId = localStorage.getItem('userEmpresaId');
 
     try {
-      // Prepara la estructura para el backend
       const inventarioActualizado = product.bodegas.map((bodega) => ({
         producto_id: product.id,
         bodega_id: bodega.id,
@@ -71,8 +71,8 @@ const ProductDetails = () => {
         title: 'Inventario actualizado',
         text: 'Los cambios se han guardado correctamente.',
         confirmButtonColor: '#3cb424',
-      });      
-      setIsEditable(false);  // Desactiva el modo edición
+      });
+      setIsEditable(false);
     } catch (error) {
       console.error(error);
       Swal.fire({
@@ -83,10 +83,10 @@ const ProductDetails = () => {
     }
   };
 
-  // Función para cancelar los cambios y restaurar los valores originales
+  // Cancela la edición y restaura los datos originales.
   const handleCancelarCambios = () => {
-    setProduct(originalProduct);  // Restaurar los valores originales
-    setIsEditable(false);  // Desactivar el modo de edición
+    setProduct(originalProduct);
+    setIsEditable(false);
   };
 
   if (!product) return <div>Cargando...</div>;
@@ -95,14 +95,12 @@ const ProductDetails = () => {
     <div className="product-details-container">
       <h3>Empresa: {product.empresa_id}</h3>
 
-      {/* Mostrar detalles del producto */}
       <div>
         <h4>Producto:</h4>
         <p>Nombre: {product.nombre}</p>
         <p>Precio: ${product.precio}</p>
       </div>
 
-      {/* Mostrar las bodegas y cantidades */}
       <div>
         <h4>Bodegas:</h4>
         {product.bodegas.length > 0 ? (
@@ -110,7 +108,6 @@ const ProductDetails = () => {
             {product.bodegas.map((bodega) => (
               <li key={bodega.id || bodega.bodegaId}>
                 {bodega.nombre} - Ubicación: {bodega.ubicacion} - 
-                {/* Modo de edición */}
                 {isEditable ? (
                   <input
                     type="number"
@@ -136,8 +133,6 @@ const ProductDetails = () => {
           <p>No hay bodegas asociadas para este producto.</p>
         )}
       </div>
-
-      {/* Botones de acción */}
 
       <div className="button-group">
         {userRole === 'admin' && (
