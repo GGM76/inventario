@@ -22,8 +22,10 @@ app.use('/roomies/', userRoutes);
 app.use('/roomies/', projectRoutes);
 app.use('/roomies/', subprojectRoutes);
 app.use('/roomies/', dispersionRoutes);
-
-const PORT = process.env.PORT || 8000;
-app.listen(PORT, () => {
-    console.log(`Servidor corriendo en http://localhost:${PORT}`);
-});
+//local
+// const PORT = process.env.PORT || 8000;
+// app.listen(PORT, () => {
+//     console.log(`Servidor corriendo en http://localhost:${PORT}`);
+// });
+//Vercel
+module.exports = app;
