@@ -3,6 +3,12 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
+console.log({
+  projectId: process.env.FIREBASE_PROJECT_ID,
+  clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+  privateKeyExists: !!process.env.FIREBASE_PRIVATE_KEY,
+});
+
 admin.initializeApp({
   credential: admin.credential.cert({
     projectId: process.env.FIREBASE_PROJECT_ID,
@@ -13,11 +19,6 @@ admin.initializeApp({
   databaseURL: `https://${process.env.FIREBASE_PROJECT_ID}.firebaseio.com`,
 });
 
-console.log({
-  projectId: process.env.FIREBASE_PROJECT_ID,
-  clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-  privateKeyExists: !!process.env.FIREBASE_PRIVATE_KEY,
-});
 const db = admin.firestore();
 
 module.exports = { admin, db };
