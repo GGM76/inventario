@@ -1,24 +1,18 @@
 const admin = require('firebase-admin');
-const dotenv = require('dotenv');
+const path = require('path');
 
-dotenv.config();
+const serviceAccountPath =
+  process.env.GOOGLE_APPLICATION_CREDENTIALS ||
+  path.join(__dirname, './serviceAccount.json');
 
-console.log({
-  projectId: process.env.FIREBASE_PROJECT_ID,
-  clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-  privateKeyExists: !!process.env.FIREBASE_PRIVATE_KEY,
-});
+const serviceAccount = require(serviceAccountPath);
 
 admin.initializeApp({
-  credential: admin.credential.cert({
-    projectId: process.env.FIREBASE_PROJECT_ID,
-    privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
-    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-  }),
-
-  databaseURL: `https://${process.env.FIREBASE_PROJECT_ID}.firebaseio.com`,
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: `https://${serviceAccount.project_id}.firebaseio.com`,
 });
 
 const db = admin.firestore();
 
 module.exports = { admin, db };
+//const serviceAccount = require('/etc/secrets/firebaseacc.json');

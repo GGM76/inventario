@@ -17,7 +17,7 @@ import {
 
 export const addProduct = createAsyncThunk(
   'products/addProduct',
-  async (newProduct) => {
+  async (newProduct) => {    
     const response = await fetch(`${process.env.REACT_APP_API_URL}/roomies/products`, {
       method: 'POST',
       body: JSON.stringify(newProduct),
